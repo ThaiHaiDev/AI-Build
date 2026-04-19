@@ -22,8 +22,9 @@ export function createApp() {
   app.use(requestId());
   app.use(pinoHttp({ logger, customProps: (req) => ({ reqId: req.id }) }));
 
-  app.use('/api/auth', authRouter);
-  app.use('/api', apiRouter);
+  const API_PREFIX = '/api/v1';
+  app.use(`${API_PREFIX}/auth`, authRouter);
+  app.use(API_PREFIX, apiRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

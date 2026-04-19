@@ -367,7 +367,7 @@ return bp === 'sm' ? <MobileNav /> : <DesktopNav />
 ```env
 VITE_APP_NAME=MyApp (Dev)
 VITE_APP_ENV=development
-VITE_API_BASE_URL=http://localhost:3000/api
+VITE_API_BASE_URL=http://localhost:3000/api/v1   # ⭐ Version prefix — sync với BE API_PREFIX
 VITE_HASURA_HTTP_URL=http://localhost:8080/v1/graphql
 VITE_HASURA_WS_URL=ws://localhost:8080/v1/graphql
 VITE_HASURA_ADMIN_SECRET=myadminsecretkey
@@ -379,7 +379,7 @@ VITE_LOG_LEVEL=debug
 ```env
 VITE_APP_NAME=MyApp (Staging)
 VITE_APP_ENV=staging
-VITE_API_BASE_URL=https://api-staging.myapp.com/api
+VITE_API_BASE_URL=https://api-staging.myapp.com/api/v1
 VITE_HASURA_HTTP_URL=https://hasura-staging.myapp.com/v1/graphql
 VITE_HASURA_WS_URL=wss://hasura-staging.myapp.com/v1/graphql
 VITE_SENTRY_DSN=https://xxx@sentry.io/staging
@@ -390,7 +390,7 @@ VITE_LOG_LEVEL=info
 ```env
 VITE_APP_NAME=MyApp
 VITE_APP_ENV=production
-VITE_API_BASE_URL=https://api.myapp.com/api
+VITE_API_BASE_URL=https://api.myapp.com/api/v1
 VITE_HASURA_HTTP_URL=https://hasura.myapp.com/v1/graphql
 VITE_HASURA_WS_URL=wss://hasura.myapp.com/v1/graphql
 VITE_SENTRY_DSN=https://xxx@sentry.io/production

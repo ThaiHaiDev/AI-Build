@@ -579,12 +579,17 @@ import { memoryRouter } from './memory'
 import { toolsRouter } from './tools'
 import { eventRouter } from '../graphql/eventHandlers'
 
+// ⭐ API versioning — mount toàn bộ REST dưới /api/v1.
+// Health + webhook KHÔNG version (infra concern, không phải contract với client).
+// Khi có breaking change: mount thêm /api/v2 song song, giữ /api/v1 cho client cũ.
+const API_PREFIX = '/api/v1'
+
 export function mountRoutes(app: Express) {
-  app.use('/',        healthRouter)           // /health, /ready
-  app.use('/api/agent',  agentRouter)
-  app.use('/api/memory', memoryRouter)
-  app.use('/api/tools',  toolsRouter)
-  app.use('/webhooks',   eventRouter)         // POST /webhooks/hasura
+  app.use('/',                        healthRouter)   // /health, /ready — KHÔNG version
+  app.use(`${API_PREFIX}/agent`,      agentRouter)
+  app.use(`${API_PREFIX}/memory`,     memoryRouter)
+  app.use(`${API_PREFIX}/tools`,      toolsRouter)
+  app.use('/webhooks',                eventRouter)    // POST /webhooks/hasura — KHÔNG version
 }
 ```
 

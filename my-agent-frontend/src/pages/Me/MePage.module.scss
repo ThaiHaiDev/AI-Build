@@ -1,0 +1,120 @@
+@use '@/styles/breakpoints' as bp;
+
+.wrap {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+
+  @include bp.up(md) {
+    padding: 3rem 2rem;
+  }
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.body {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+
+  @include bp.up(md) {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 2rem;
+  }
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: #fff;
+  font-size: 1.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fields {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.125rem;
+
+  @include bp.up(md) {
+    grid-template-columns: 120px 1fr;
+    gap: 1rem;
+    align-items: center;
+  }
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  @include bp.up(md) {
+    font-size: 0.8125rem;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+}
+
+.value {
+  font-size: 0.9375rem;
+  color: #0f172a;
+  word-break: break-word;
+}
+
+.roleBadge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  background: #ede9fe;
+  color: #5b21b6;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.footer {
+  padding: 1.25rem 2rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.logoutBtn {
+  min-width: 140px;
+}

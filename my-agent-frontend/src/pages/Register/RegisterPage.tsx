@@ -1,3 +1,12 @@
+import { useTranslation } from 'react-i18next'
+import { AuthCard } from '@/features/auth/components/AuthCard'
+import { RegisterForm } from '@/features/auth/components/RegisterForm'
+
 export default function RegisterPage() {
-  return <div className="py-12 text-center">Register (sprint 1)</div>
+  const { t } = useTranslation('auth')
+  return (
+    <AuthCard title={t('register.title')} subtitle={t('register.subtitle')}>
+      <RegisterForm />
+    </AuthCard>
+  )
 }

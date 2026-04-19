@@ -18,12 +18,14 @@ export default defineConfig(({ mode }) => {
       },
       preprocessorOptions: {
         scss: {
+          api: 'modern-compiler',
           loadPaths: [path.resolve(__dirname, 'src/styles')],
         },
       },
     },
     server: {
       port: 5173,
+      strictPort: true,
       proxy: mode === 'development' ? {
         '/api': {
           target: env.VITE_API_BASE_URL,

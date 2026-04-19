@@ -7,6 +7,6 @@ interface Props { element: ReactElement }
 
 export function AuthRoute({ element }: Props) {
   const { isAuthenticated } = useAuthContext()
-  if (isAuthenticated) return <Navigate to={routes.home} replace />
+  if (isAuthenticated) return <Navigate to={routes.me} replace />
   return element
 }

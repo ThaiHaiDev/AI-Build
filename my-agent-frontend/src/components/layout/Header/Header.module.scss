@@ -1,0 +1,65 @@
+@use '@/styles/breakpoints' as bp;
+
+.root {
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0.875rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  @include bp.up(md) {
+    padding: 1rem 2rem;
+  }
+}
+
+.brand {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #0f172a;
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  @include bp.up(md) { gap: 1.25rem; }
+}
+
+.link, .linkActive {
+  font-size: 0.875rem;
+  color: #475569;
+  text-decoration: none;
+  padding: 0.375rem 0.25rem;
+  border-bottom: 2px solid transparent;
+  transition: color 150ms;
+
+  &:hover { color: #0f172a; }
+}
+
+.linkActive {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+.langBtn {
+  border: 1px solid #cbd5e1;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  background: #fff;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  transition: all 150ms;
+
+  &:hover { border-color: #94a3b8; background: #f8fafc; }
+}

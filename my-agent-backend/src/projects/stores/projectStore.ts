@@ -54,12 +54,11 @@ export const projectStore = {
   },
 
   async findByNameCI(name: string, excludeId?: string): Promise<ProjectRecord | null> {
-    const p = await Project.findOne({
-      where: {
-        ...sqlWhere(fn('LOWER', col('name')), name.toLowerCase()),
-        ...(excludeId ? { id: { [Op.ne]: excludeId } } : {}),
-      },
-    });
+    const conditions: import('sequelize').WhereOptions[] = [
+      sqlWhere(fn('LOWER', col('name')), name.toLowerCase()),
+    ];
+    if (excludeId) conditions.push({ id: { [Op.ne]: excludeId } });
+    const p = await Project.findOne({ where: { [Op.and]: conditions } });
     return p ? toRecord(p) : null;
   },
 

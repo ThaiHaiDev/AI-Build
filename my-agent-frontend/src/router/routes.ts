@@ -13,12 +13,14 @@ export interface AppRoute {
 }
 
 export const routes = {
-  home:      '/',
-  login:     '/login',
-  register:  '/register',
-  me:        '/me',
-  dashboard: '/dashboard',
-  notFound:  '/404',
+  home:         '/',
+  login:        '/login',
+  register:     '/register',
+  me:           '/me',
+  dashboard:    '/dashboard',
+  projects:     '/projects',
+  projectDetail:(id: string) => `/projects/${id}`,
+  notFound:     '/404',
 } as const
 
 export const appRoutes: AppRoute[] = [
@@ -27,5 +29,7 @@ export const appRoutes: AppRoute[] = [
   { path: routes.register,  routeType: 'auth',      layout: 'auth', lazy: () => import('@/pages/Register') },
   { path: routes.me,        routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/Me') },
   { path: routes.dashboard, routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/Dashboard') },
+  { path: routes.projects,  routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/Projects') },
+  { path: '/projects/:id',  routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/ProjectDetail') },
   { path: routes.notFound,  routeType: 'public',    layout: 'app',  lazy: () => import('@/pages/NotFound') },
 ]

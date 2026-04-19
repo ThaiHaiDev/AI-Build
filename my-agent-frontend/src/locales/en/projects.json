@@ -1,0 +1,96 @@
+{
+  "title": "Projects",
+  "list": {
+    "page_title": "Projects",
+    "empty_member": "You don't belong to any project yet. Contact your PM/Leader to be added.",
+    "empty_admin": "No projects yet. Create one to get started.",
+    "search_placeholder": "Search by project name…",
+    "include_archived": "Show archived projects",
+    "member_count": "{{count}} members",
+    "create": "New project"
+  },
+  "status": {
+    "active": "Active",
+    "archived": "Archived"
+  },
+  "card": {
+    "no_description": "(No description)",
+    "no_tech": "(No tech stack)"
+  },
+  "detail": {
+    "tab_overview": "Overview",
+    "tab_members": "Members",
+    "description": "Description",
+    "tech_stack": "Tech stack",
+    "partner": "Partner",
+    "partner_name": "Partner name",
+    "partner_contact": "Contact person",
+    "partner_email": "Email",
+    "partner_phone": "Phone",
+    "created_at": "Created at",
+    "archived_at": "Archived at",
+    "edit": "Edit",
+    "archive": "Archive",
+    "unarchive": "Restore",
+    "back_to_list": "Back to list",
+    "no_access": "You don't have access to this project",
+    "not_found": "Project not found"
+  },
+  "form": {
+    "name": "Project name",
+    "name_placeholder": "e.g. Project Alpha",
+    "description": "Description",
+    "tech_stack": "Tech stack",
+    "tech_stack_placeholder": "e.g. React, Node.js, Postgres",
+    "partner_section": "Partner info (optional)",
+    "partner_name": "Partner name",
+    "partner_contact": "Contact person",
+    "partner_email": "Partner email",
+    "partner_phone": "Phone",
+    "submit_create": "Create project",
+    "submit_update": "Save changes",
+    "title_create": "Create new project",
+    "title_update": "Edit project"
+  },
+  "members": {
+    "title": "Members",
+    "add": "+ Add member",
+    "remove": "Remove",
+    "empty": "No members yet.",
+    "added_at": "Added at",
+    "role": "Role",
+    "email": "Email",
+    "name": "Name",
+    "search_title": "Find user to add",
+    "search_placeholder": "Enter email or name…",
+    "already_member": "Already a member",
+    "no_results": "No matching user.",
+    "confirm_remove_title": "Remove member?",
+    "confirm_remove_body": "You are about to remove {{name}} from this project. Continue?"
+  },
+  "archive": {
+    "confirm_title": "Archive project?",
+    "confirm_body": "The project will be hidden from the default list and become read-only. Continue?",
+    "unarchive_confirm_title": "Restore project?",
+    "unarchive_confirm_body": "The project will be moved back to the active list. Continue?"
+  },
+  "toast": {
+    "create_success": "Project created.",
+    "update_success": "Project updated.",
+    "archive_success": "Project archived.",
+    "unarchive_success": "Project restored.",
+    "add_member_success": "Member added.",
+    "remove_member_success": "Member removed.",
+    "no_access": "You don't have access to this project."
+  },
+  "error": {
+    "name_duplicate": "A project with this name already exists.",
+    "archived_readonly": "This project is archived and can't be changed.",
+    "rate_limit": "Too many requests. Please try again later.",
+    "generic": "Something went wrong. Please try again."
+  },
+  "action": {
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  }
+}

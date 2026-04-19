@@ -8,7 +8,8 @@
     "login": "Login",
     "register": "Register",
     "logout": "Logout",
-    "me": "Account"
+    "me": "Account",
+    "projects": "Projects"
   },
   "home": {
     "title": "Welcome",

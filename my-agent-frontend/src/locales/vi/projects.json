@@ -1,0 +1,96 @@
+{
+  "title": "Dự án",
+  "list": {
+    "page_title": "Danh sách dự án",
+    "empty_member": "Bạn chưa thuộc dự án nào. Liên hệ PM/Leader để được add.",
+    "empty_admin": "Chưa có dự án nào. Tạo dự án mới để bắt đầu.",
+    "search_placeholder": "Tìm theo tên dự án…",
+    "include_archived": "Xem dự án đã archive",
+    "member_count": "{{count}} thành viên",
+    "create": "Tạo dự án"
+  },
+  "status": {
+    "active": "Đang hoạt động",
+    "archived": "Đã archive"
+  },
+  "card": {
+    "no_description": "(Chưa có mô tả)",
+    "no_tech": "(Chưa có stack)"
+  },
+  "detail": {
+    "tab_overview": "Tổng quan",
+    "tab_members": "Thành viên",
+    "description": "Mô tả",
+    "tech_stack": "Tech stack",
+    "partner": "Đối tác",
+    "partner_name": "Tên đối tác",
+    "partner_contact": "Người liên hệ",
+    "partner_email": "Email",
+    "partner_phone": "Số điện thoại",
+    "created_at": "Ngày tạo",
+    "archived_at": "Ngày archive",
+    "edit": "Sửa",
+    "archive": "Archive",
+    "unarchive": "Khôi phục",
+    "back_to_list": "Về danh sách",
+    "no_access": "Không có quyền xem dự án này",
+    "not_found": "Dự án không tồn tại"
+  },
+  "form": {
+    "name": "Tên dự án",
+    "name_placeholder": "VD: Project Alpha",
+    "description": "Mô tả",
+    "tech_stack": "Tech stack",
+    "tech_stack_placeholder": "VD: React, Node.js, Postgres",
+    "partner_section": "Thông tin đối tác (tuỳ chọn)",
+    "partner_name": "Tên đối tác",
+    "partner_contact": "Người liên hệ",
+    "partner_email": "Email đối tác",
+    "partner_phone": "Số điện thoại",
+    "submit_create": "Tạo dự án",
+    "submit_update": "Lưu thay đổi",
+    "title_create": "Tạo dự án mới",
+    "title_update": "Sửa dự án"
+  },
+  "members": {
+    "title": "Thành viên",
+    "add": "+ Thêm thành viên",
+    "remove": "Gỡ",
+    "empty": "Dự án chưa có thành viên.",
+    "added_at": "Thêm ngày",
+    "role": "Vai trò",
+    "email": "Email",
+    "name": "Tên",
+    "search_title": "Tìm user để thêm",
+    "search_placeholder": "Nhập email hoặc tên…",
+    "already_member": "Đã là thành viên",
+    "no_results": "Không tìm thấy user phù hợp.",
+    "confirm_remove_title": "Gỡ thành viên khỏi dự án?",
+    "confirm_remove_body": "Bạn sắp gỡ {{name}} khỏi dự án này. Tiếp tục?"
+  },
+  "archive": {
+    "confirm_title": "Archive dự án?",
+    "confirm_body": "Dự án sẽ bị ẩn khỏi danh sách mặc định và không sửa được. Tiếp tục?",
+    "unarchive_confirm_title": "Khôi phục dự án?",
+    "unarchive_confirm_body": "Dự án sẽ quay lại danh sách mặc định. Tiếp tục?"
+  },
+  "toast": {
+    "create_success": "Đã tạo dự án thành công.",
+    "update_success": "Đã cập nhật dự án.",
+    "archive_success": "Đã archive dự án.",
+    "unarchive_success": "Đã khôi phục dự án.",
+    "add_member_success": "Đã thêm thành viên.",
+    "remove_member_success": "Đã gỡ thành viên.",
+    "no_access": "Không có quyền truy cập dự án này."
+  },
+  "error": {
+    "name_duplicate": "Tên dự án đã tồn tại.",
+    "archived_readonly": "Dự án đã archive, không thể thao tác.",
+    "rate_limit": "Thao tác quá nhanh, thử lại sau.",
+    "generic": "Đã có lỗi xảy ra, vui lòng thử lại."
+  },
+  "action": {
+    "confirm": "Xác nhận",
+    "cancel": "Huỷ"
+  }
+}

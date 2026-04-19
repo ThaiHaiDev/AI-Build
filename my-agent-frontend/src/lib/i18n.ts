@@ -14,7 +14,7 @@ i18n
     fallbackLng: 'en',
     supportedLngs: SUPPORTED_LANGUAGES,
     defaultNS: 'common',
-    ns: ['common', 'auth', 'validation'],
+    ns: ['common', 'auth', 'validation', 'projects'],
     interpolation: { escapeValue: false },
     detection: {
       order: ['localStorage', 'navigator'],

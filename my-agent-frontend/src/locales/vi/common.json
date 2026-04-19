@@ -8,7 +8,8 @@
     "login": "Đăng nhập",
     "register": "Đăng ký",
     "logout": "Đăng xuất",
-    "me": "Tài khoản"
+    "me": "Tài khoản",
+    "projects": "Dự án"
   },
   "home": {
     "title": "Chào mừng",

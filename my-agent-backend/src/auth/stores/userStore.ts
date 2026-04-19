@@ -46,10 +46,21 @@ export const userStore = {
   },
 };
 
+const DEMO_USERS: Array<{ email: string; name: string; password: string; role: Role }> = [
+  { email: 'admin@example.com',    name: 'Admin',    password: 'Admin@12345',    role: ROLES.SUPER_ADMIN },
+  { email: 'leader@example.com',   name: 'Leader',   password: 'Leader@12345',   role: ROLES.ADMIN },
+  { email: 'user@example.com',     name: 'User',     password: 'User@12345',     role: ROLES.USER },
+  { email: 'outsider@example.com', name: 'Outsider', password: 'Outsider@12345', role: ROLES.USER },
+];
+
 export async function seedDemoUsers(): Promise<void> {
-  if ((await userStore.count()) > 0) return;
-  await userStore.create({ email: 'admin@example.com',  name: 'Admin',  password: 'Admin@12345',  role: ROLES.SUPER_ADMIN });
-  await userStore.create({ email: 'leader@example.com', name: 'Leader', password: 'Leader@12345', role: ROLES.ADMIN });
-  await userStore.create({ email: 'user@example.com',   name: 'User',   password: 'User@12345',   role: ROLES.USER });
-  await userStore.create({ email: 'outsider@example.com', name: 'Outsider', password: 'Outsider@12345', role: ROLES.USER });
+  for (const u of DEMO_USERS) {
+    const existing = await User.findOne({ where: { email: u.email } });
+    if (!existing) {
+      await userStore.create(u);
+    } else if (existing.role !== u.role) {
+      existing.role = u.role;
+      await existing.save();
+    }
+  }
 }

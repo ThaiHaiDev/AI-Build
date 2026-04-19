@@ -98,6 +98,58 @@
 
 ---
 
+## 2026-04-19 · FE F00–F98 · Project Management UI + pre-sprint revert
+
+- **Outcome**: Ship toàn bộ FE sprint-02 — list / detail / create / edit / archive / members / search user, verify permission gating, i18n VN+EN.
+- **Files (new)**:
+  - `my-agent-frontend/src/features/projects/types/project.types.ts`
+  - `my-agent-frontend/src/features/projects/services/projectService.ts`
+  - `my-agent-frontend/src/features/projects/schemas/project.schema.ts`
+  - `my-agent-frontend/src/features/projects/utils/parseProjectError.ts`
+  - `my-agent-frontend/src/features/projects/components/{ProjectCard,ProjectForm,ProjectFormModal,AddMemberModal,ConfirmDialog}.tsx`
+  - `my-agent-frontend/src/pages/{Projects,ProjectDetail}/*`
+  - `my-agent-frontend/src/locales/{vi,en}/projects.json`
+- **Files (updated)**:
+  - `src/features/auth/types/auth.types.ts` — name/createdAt/permissions nay required (F00)
+  - `src/router/routes.ts` — thêm `/projects`, `/projects/:id`
+  - `src/services/rest/endpoints.ts` — thêm PROJECTS + USERS.SEARCH
+  - `src/lib/i18n.ts`, `src/locales/{vi,en}/index.ts`, `common.json` — namespace + nav label
+  - `src/components/layout/Header/Header.tsx` — link "Dự án"
+- **Gating**: nút Create/Edit/Archive/Add-Member/Remove-Member hiển thị theo `role === SUPER_ADMIN` + disable nếu archived. BE vẫn chặn độc lập (defense in depth).
+- **Typecheck**: FE `tsc --noEmit` pass.
+
+---
+
+## 2026-04-19 · BE bug fix phát sinh · projectStore.findByNameCI
+
+- **Outcome**: Fix 500 khi create/update project do spread `Sequelize.where()` (trả về Literal object không spread được). Đổi sang `{ [Op.and]: [...] }`.
+- **File**: `my-agent-backend/src/projects/stores/projectStore.ts`
+- **Phát hiện qua**: curl TC-CR-01 / TC-CR-02.
+
+---
+
+## 2026-04-19 · BE seed upgrade · role patch cho user đã tồn tại
+
+- **Outcome**: `seedDemoUsers` không còn phụ thuộc `count === 0`; nếu user demo tồn tại với role lệch (ví dụ admin@ role=admin cũ) → upgrade lên đúng role (admin → super_admin) + thêm các user demo còn thiếu.
+- **File**: `my-agent-backend/src/auth/stores/userStore.ts`
+- **Lý do**: DB đã có user từ sprint-01 nên seed mới không chạy, gây 403 toàn bộ endpoint SA-only.
+
+---
+
+## 2026-04-19 · Manual E2E verify (TC-LS / TC-CR / TC-ED / TC-AR / TC-MB / TC-VA / TC-FA)
+
+- **Outcome**: Toàn bộ 20+ test case BE pass qua curl với 4 account seed.
+- **Pass**:
+  - TC-LS-01 SA thấy Alpha+Beta · TC-LS-02 leader chỉ thấy Alpha · TC-LS-03 outsider rỗng · TC-LS-04 `?includeArchived=true` hiện Gamma
+  - TC-CR-01 create 201 · TC-CR-02 trùng tên case-insensitive 409 · TC-CR-03 leader 403 · TC-CR-04 name rỗng 400
+  - TC-ED-01 patch 200 · TC-AR-01 archive 200 · TC-AR-02 patch archived 409 · TC-AR-03 unarchive 200
+  - TC-FA-01 outsider detail Alpha 403 · TC-FA-02 member user thấy Alpha 200
+  - TC-MB-01 list members · TC-MB-02 search user · TC-MB-03 add 201 · TC-MB-04 outsider thấy Alpha · TC-MB-05 duplicate 409 · TC-MB-06 remove 200 · TC-MB-07 sau remove 403 · TC-MB-08 non-UUID 400
+  - TC-VA-01 partnerEmail sai format 400
+- **Note FE UI**: không thể drive browser từ CLI; verify bằng typecheck + tuân thủ contract BE. User cần test trực quan theo TC-UI ở `05-test-cases.md`.
+
+---
+
 ## 2026-04-19 · B40–B44 hoãn · Tests
 
 - **Lý do**: repo chưa có test framework (vitest/jest). Chưa tự cài dep lớn khi user chưa duyệt.

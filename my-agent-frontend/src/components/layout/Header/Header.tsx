@@ -15,9 +15,14 @@ export function Header() {
         <Link to={routes.home} className={styles.brand}>{env.VITE_APP_NAME}</Link>
         <nav className={styles.nav}>
           {isAuthenticated ? (
-            <NavLink to={routes.me} className={({ isActive }) => isActive ? styles.linkActive : styles.link}>
-              {t('nav.me')}
-            </NavLink>
+            <>
+              <NavLink to={routes.projects} className={({ isActive }) => isActive ? styles.linkActive : styles.link}>
+                {t('nav.projects', { defaultValue: 'Projects' })}
+              </NavLink>
+              <NavLink to={routes.me} className={({ isActive }) => isActive ? styles.linkActive : styles.link}>
+                {t('nav.me')}
+              </NavLink>
+            </>
           ) : (
             <>
               <NavLink to={routes.login} className={({ isActive }) => isActive ? styles.linkActive : styles.link}>

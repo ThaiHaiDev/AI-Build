@@ -9,6 +9,7 @@
 2. **Không "dọn dẹp" ngoài scope task.** Task bug fix không kèm refactor. Không rename biến ngoài file đang sửa.
 3. **Root cause > workaround.** Gặp lỗi phải tìm nguyên nhân, không bypass (`--no-verify`, skip test, try/catch nuốt lỗi).
 4. **Test thật, không mock DB / API prod.** Integration test phải hit Postgres thật (local `aiTest`).
+5. **Log mọi thay đổi vào `04-history.md`** của sprint tương ứng — fix bug, task code done, design schema / tech doc mới, quyết định nghiệp vụ thay đổi. Làm **ngay khi xong**, không gộp cuối sprint. Format entry theo mẫu có sẵn (Outcome / Files / Follow-up). Bug phát sinh ở sprint cũ nhưng fix ở sprint mới → log vào **cả hai** history để trace hai chiều.
 
 ## DON'T — Tuyệt đối không được làm
 

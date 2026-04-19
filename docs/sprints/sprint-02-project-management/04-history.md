@@ -34,6 +34,20 @@
 
 ---
 
+## 2026-04-19 · DB schema design · Full product
+
+- **Outcome**: Thiết kế full DB schema cho toàn sản phẩm (Sprint 01 → 05) để tránh migration phá schema về sau.
+- **File**: [my-agent-backend/docs/database-schema.md](../../../my-agent-backend/docs/database-schema.md) (new)
+- **Scope**: 5 bảng — `system_user` (có, thêm `is_active`), `projects`, `project_members`, `test_accounts` (Sprint-03), `audit_logs` (Sprint-05).
+- **Decision nghiệp vụ phát sinh**:
+  - Gộp migration `add_is_active_to_system_user` vào Sprint-02 (thay vì chờ Sprint-04) → 1 lần migration cho cả 2 nhu cầu.
+  - `project_members` dùng soft remove với partial unique index `(project_id, user_id) WHERE removed_at IS NULL` để cho phép re-add sau gỡ, giữ history đầy đủ (D3).
+  - `tech_stack` để kiểu `TEXT` phase 1, chuyển `TEXT[]` + GIN khi Sprint-05 cần filter.
+- **Note**: Tech doc — đặt ở `my-agent-backend/docs/` để không vi phạm rule SDD (spec/plan product chỉ chứa business).
+- **Follow-up**: B10–B11 sẽ implement migration + model theo schema này.
+
+---
+
 <!--
 Template entry (copy khi cần):
 

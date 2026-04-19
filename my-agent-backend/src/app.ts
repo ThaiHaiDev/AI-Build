@@ -9,6 +9,7 @@ import { requestId } from './middlewares/requestId.js';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 import { apiRouter } from './routes/index.js';
 import { authRouter } from './auth/index.js';
+import { projectsRouter } from './projects/routes.js';
 
 export function createApp() {
   const app = express();
@@ -24,6 +25,7 @@ export function createApp() {
 
   const API_PREFIX = '/api/v1';
   app.use(`${API_PREFIX}/auth`, authRouter);
+  app.use(API_PREFIX, projectsRouter);
   app.use(API_PREFIX, apiRouter);
 
   app.use(notFoundHandler);

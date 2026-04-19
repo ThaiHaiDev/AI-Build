@@ -48,6 +48,8 @@ export const userStore = {
 
 export async function seedDemoUsers(): Promise<void> {
   if ((await userStore.count()) > 0) return;
-  await userStore.create({ email: 'admin@example.com', name: 'Admin', password: 'Admin@12345', role: ROLES.ADMIN });
-  await userStore.create({ email: 'user@example.com',  name: 'User',  password: 'User@12345',  role: ROLES.USER });
+  await userStore.create({ email: 'admin@example.com',  name: 'Admin',  password: 'Admin@12345',  role: ROLES.SUPER_ADMIN });
+  await userStore.create({ email: 'leader@example.com', name: 'Leader', password: 'Leader@12345', role: ROLES.ADMIN });
+  await userStore.create({ email: 'user@example.com',   name: 'User',   password: 'User@12345',   role: ROLES.USER });
+  await userStore.create({ email: 'outsider@example.com', name: 'Outsider', password: 'Outsider@12345', role: ROLES.USER });
 }

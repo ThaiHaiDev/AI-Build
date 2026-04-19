@@ -48,6 +48,64 @@
 
 ---
 
+## 2026-04-19 · B10–B13 · Models + stores Project/ProjectMember
+
+- **Outcome**: Tạo model `Project`, `ProjectMember` + stores CRUD / membership. Thêm `is_active` vào `User` (gộp sớm theo schema doc).
+- **Files**:
+  - `my-agent-backend/src/database/models/Project.ts` (new)
+  - `my-agent-backend/src/database/models/ProjectMember.ts` (new, setup associations)
+  - `my-agent-backend/src/database/models/User.ts` (+ isActive)
+  - `my-agent-backend/src/projects/stores/projectStore.ts` (new) — case-insensitive name check via `LOWER()`
+  - `my-agent-backend/src/projects/stores/projectMemberStore.ts` (new) — soft remove pattern
+- **Schema sync**: dựa vào `sequelize.sync({ alter: true })` ở dev, không thêm migration framework.
+- **Typecheck**: pass.
+
+---
+
+## 2026-04-19 · B14, B20–B33 · Controllers + routes + middleware
+
+- **Outcome**: 10 endpoint Project/Member/User-search ship đầy đủ với auth + role + membership check + rate limit.
+- **Files**:
+  - `my-agent-backend/src/projects/middlewares/requireProjectAccess.ts` (new)
+  - `my-agent-backend/src/projects/middlewares/projectRateLimiter.ts` (new, in-memory 20req/min/user)
+  - `my-agent-backend/src/projects/schemas/project.schema.ts` (new, Zod)
+  - `my-agent-backend/src/projects/controllers/ProjectController.ts` (new, 9 handler)
+  - `my-agent-backend/src/projects/controllers/UserController.ts` (new, search)
+  - `my-agent-backend/src/projects/routes.ts` (new) + mount trong `src/app.ts`
+- **Error handling**: throw `AppError` subclass (`ConflictError project.name.duplicate`, `project.archived.readonly`, `ForbiddenError`, `NotFoundError`).
+- **Permission**: SA-only cho write; `requireProjectAccess` cho read detail/members.
+- **Typecheck**: pass.
+
+---
+
+## 2026-04-19 · B12 · Seed demo projects + users
+
+- **Outcome**: Seed idempotent 4 user (admin SA, leader ADMIN, user USER, outsider USER) + 3 project (Alpha active với leader+user, Beta active, Gamma archived).
+- **Files**:
+  - `my-agent-backend/src/auth/stores/userStore.ts` (upgrade admin→SUPER_ADMIN, thêm leader/outsider)
+  - `my-agent-backend/src/projects/stores/seedDemoProjects.ts` (new)
+  - `my-agent-backend/src/index.ts` (gọi seed sau boot)
+- **Purpose**: chạy full test cases ở [05-test-cases.md](./05-test-cases.md) không cần setup tay.
+
+---
+
+## 2026-04-19 · API docs cho FE — projects.md
+
+- **Outcome**: Viết FE-facing API docs để triển khai F10–F98 song song mà không cần quay lại hỏi BE.
+- **File**: [my-agent-backend/docs/api/projects.md](../../../my-agent-backend/docs/api/projects.md) (new)
+- **Scope**: 10 endpoint (method/path/role/body/response/errors/curl) + error envelope + TypeScript types block (`Project`/`ProjectMember`/`UserSummary`/`Role`/`ProjectStatus`) + seed data table + permission matrix cho UI gating (defense in depth).
+- **Decision**: chưa có pagination (sprint-05). Search user debounce 300ms recommended ở FE.
+
+---
+
+## 2026-04-19 · B40–B44 hoãn · Tests
+
+- **Lý do**: repo chưa có test framework (vitest/jest). Chưa tự cài dep lớn khi user chưa duyệt.
+- **Tạm thay**: verify thủ công bằng TC-LS/TC-CR/TC-ED/TC-AR/TC-MB ở [05-test-cases.md](./05-test-cases.md) với 4 account seed.
+- **Follow-up**: xin user quyết định vitest setup — nếu OK, mở task mới (không thuộc sprint-02 chính).
+
+---
+
 <!--
 Template entry (copy khi cần):
 

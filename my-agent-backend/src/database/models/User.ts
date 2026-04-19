@@ -8,6 +8,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare name:         string;
   declare passwordHash: string;
   declare role:         Role;
+  declare isActive:     CreationOptional<boolean>;
   declare createdAt:    CreationOptional<Date>;
   declare updatedAt:    CreationOptional<Date>;
 }
@@ -27,6 +28,12 @@ User.init(
       type: DataTypes.ENUM(...Object.values(ROLES)),
       allowNull: false,
       defaultValue: ROLES.USER,
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      field: 'is_active',
     },
     createdAt: { type: DataTypes.DATE, field: 'created_at' },
     updatedAt: { type: DataTypes.DATE, field: 'updated_at' },

@@ -92,6 +92,7 @@ my-app/
 │   │   ├── ui/                      # Primitives (Button, Input, Modal...)
 │   │   │   ├── Button/
 │   │   │   │   ├── Button.tsx
+│   │   │   │   ├── Button.module.scss   # ⭐ Co-located SCSS module (per-component)
 │   │   │   │   ├── Button.test.tsx
 │   │   │   │   ├── Button.types.ts
 │   │   │   │   └── index.ts
@@ -147,7 +148,8 @@ my-app/
 │   ├── hooks/                       # Global custom hooks
 │   │   ├── useDebounce.ts
 │   │   ├── useLocalStorage.ts
-│   │   ├── useMediaQuery.ts
+│   │   ├── useMediaQuery.ts         # ⭐ Responsive: matchMedia wrapper
+│   │   ├── useBreakpoint.ts         # ⭐ Responsive: returns 'sm'|'md'|'lg'|'xl'|'2xl'
 │   │   ├── usePagination.ts
 │   │   └── index.ts
 │   │
@@ -182,10 +184,13 @@ my-app/
 │   │   └── index.ts
 │   │
 │   ├── utils/                       # Pure utility functions
-│   │   ├── formatters.ts
-│   │   ├── validators.ts
-│   │   ├── helpers.ts
-│   │   ├── constants.ts
+│   │   ├── cn.ts                    # ⭐ classnames merger (Tailwind + scss module)
+│   │   ├── formatters.ts            # ⭐ formatDate, formatNumber, formatCurrency, truncate
+│   │   ├── validators.ts            # ⭐ isEmail, isUrl, isStrongPassword
+│   │   ├── helpers.ts               # ⭐ sleep, debounce, throttle, pick, omit, groupBy
+│   │   ├── storage.ts               # ⭐ safe localStorage/sessionStorage wrapper
+│   │   ├── url.ts                   # ⭐ buildQueryString, parseQueryString
+│   │   ├── constants.ts             # ⭐ App-wide constants (BREAKPOINTS, REGEX,…)
 │   │   └── index.ts
 │   │
 │   ├── shared/                      # ⭐ Cross-feature shared resources
@@ -232,9 +237,11 @@ my-app/
 │   │   │   └── index.ts
 │   │   └── index.ts                 # Resources map { en, vi }
 │   │
-│   ├── styles/
-│   │   ├── index.css
-│   │   ├── variables.css
+│   ├── styles/                      # ⭐ Global styles only — per-component dùng *.module.scss
+│   │   ├── index.css                # Entry: @import variables/animations TRƯỚC @tailwind
+│   │   ├── variables.css            # Design tokens (CSS vars)
+│   │   ├── _mixins.scss             # ⭐ SCSS mixins (responsive, flex, …)
+│   │   ├── _breakpoints.scss        # ⭐ Breakpoint vars (đồng bộ tailwind.config)
 │   │   └── animations.css
 │   │
 │   └── test/                        # ⭐ NEW – Test infrastructure
@@ -275,6 +282,80 @@ my-app/
 ├── vitest.config.ts                 # ⭐ NEW
 └── vite.config.ts
 ```
+
+---
+
+## 🎨 Styling — Tailwind + SCSS Modules
+
+**Quy tắc:**
+- **Tailwind utilities** là default cho layout, spacing, color cơ bản.
+- **SCSS module** (`*.module.scss`) co-located TRONG folder component khi cần custom phức tạp (animation, pseudo-element, nested selector). KHÔNG dùng global `.scss`.
+- **Không dùng `style={{...}}` inline** cho design token — dùng Tailwind class hoặc CSS variable.
+- File `styles/index.css` thứ tự BẮT BUỘC: `@import` TRƯỚC `@tailwind` (PostCSS sẽ warn nếu sai).
+
+### Per-component SCSS pattern
+
+```
+src/components/ui/Button/
+├── Button.tsx
+├── Button.module.scss          # styles riêng cho Button
+├── Button.types.ts
+└── index.ts
+```
+
+```tsx
+// Button.tsx
+import styles from './Button.module.scss'
+import { cn } from '@/utils/cn'
+
+export function Button({ className, ...rest }) {
+  return <button className={cn(styles.root, 'px-4 py-2', className)} {...rest} />
+}
+```
+
+```scss
+// Button.module.scss
+@use '@/styles/breakpoints' as bp;
+
+.root {
+  transition: transform .15s ease;
+  &:hover { transform: translateY(-1px); }
+
+  @include bp.up(md) {
+    letter-spacing: .01em;
+  }
+}
+```
+
+---
+
+## 📱 Responsive — Mobile-first
+
+**Breakpoints** (đồng bộ Tailwind default + `_breakpoints.scss`):
+
+| Token | Min width | Devices                   |
+|-------|-----------|---------------------------|
+| `sm`  | 640px     | Large phone               |
+| `md`  | 768px     | Tablet portrait           |
+| `lg`  | 1024px    | Tablet landscape / laptop |
+| `xl`  | 1280px    | Desktop                   |
+| `2xl` | 1536px    | Large desktop             |
+
+**3 cách dùng — chọn theo context:**
+
+1. **Tailwind utility** (90% case): `<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3" />`
+2. **SCSS mixin** (khi cần custom CSS): `@include bp.up(md) { ... }`
+3. **Hook `useBreakpoint()`** (khi logic JS phụ thuộc viewport, vd: render khác component cho mobile vs desktop):
+
+```tsx
+const bp = useBreakpoint()    // 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+return bp === 'sm' ? <MobileNav /> : <DesktopNav />
+```
+
+**Required cho mọi page:**
+- Test ở **375 / 768 / 1024 / 1440** trước khi mark DoD pass.
+- `index.html` phải có `<meta name="viewport" content="width=device-width, initial-scale=1" />`.
+- Touch target tối thiểu **44×44px** (`min-h-11 min-w-11`) trên mobile.
 
 ---
 

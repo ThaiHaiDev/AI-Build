@@ -1,0 +1,7 @@
+{
+  "required": "Trường này bắt buộc",
+  "email": "Email không hợp lệ",
+  "min": "Tối thiểu {{count}} ký tự",
+  "max": "Tối đa {{count}} ký tự",
+  "passwordMismatch": "Mật khẩu xác nhận không khớp"
+}

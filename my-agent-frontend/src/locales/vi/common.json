@@ -1,0 +1,17 @@
+{
+  "app_name": "MyAgent",
+  "loading": "Đang tải...",
+  "save": "Lưu",
+  "cancel": "Huỷ",
+  "back": "Quay lại",
+  "nav": {
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "logout": "Đăng xuất",
+    "me": "Tài khoản"
+  },
+  "home": {
+    "title": "Chào mừng",
+    "subtitle": "Frontend đã khởi động."
+  }
+}

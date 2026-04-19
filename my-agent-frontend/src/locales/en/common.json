@@ -1,0 +1,17 @@
+{
+  "app_name": "MyAgent",
+  "loading": "Loading...",
+  "save": "Save",
+  "cancel": "Cancel",
+  "back": "Back",
+  "nav": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "me": "Account"
+  },
+  "home": {
+    "title": "Welcome",
+    "subtitle": "Frontend scaffold is up."
+  }
+}

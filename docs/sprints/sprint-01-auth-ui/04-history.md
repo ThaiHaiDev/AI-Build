@@ -71,6 +71,22 @@
 
 ---
 
+## 2026-04-19 · BE-BUG-01 FIXED · Auth contract gaps
+
+- **Status**: ✅ Fixed (triển khai trong sprint-02 pre-sprint, task B00–B04).
+- **Outcome**: 3 endpoint `/auth/register|login|me` trả đúng shape public `{id, email, name, role, permissions, createdAt}`. `/me` không còn leak `jti`. Permissions derive từ `ROLE_PERMISSIONS` (BE authoritative).
+- **Files**:
+  - `my-agent-backend/src/auth/utils/toPublicUser.ts` (new) — serializer + kiểu `PublicUser`
+  - `my-agent-backend/src/auth/services/AuthService.ts` — register/login trả `toPublicUser(rec)`
+  - `my-agent-backend/src/auth/controllers/AuthController.ts` — `/me` fetch record qua `userStore.findById` rồi serialize
+- **Note**: Column `name` + `created_at` đã có sẵn ở model User (không cần migration). `permissions` derive từ role, không phải column.
+- **Test case liên quan**: TC-BE-01 → TC-BE-05 tại [sprint-02/05-test-cases.md](../sprint-02-project-management/05-test-cases.md).
+- **Typecheck**: pass (`npm run typecheck`).
+- **Follow-up**: user verify bằng curl (3 endpoint) → sau đó FE thực hiện F00–F02 revert workaround + enable `useHasPermission`.
+- **Chi tiết sprint-02**: [sprint-02/04-history.md](../sprint-02-project-management/04-history.md).
+
+---
+
 <!--
 Template entry (copy khi cần):
 

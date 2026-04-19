@@ -6,6 +6,8 @@ import { AuthService } from '../services/AuthService.js';
 import { loginSchema, registerSchema } from '../schemas/login.schema.js';
 import { setRefreshCookie, clearRefreshCookie } from '../utils/cookie.js';
 import { revokedTokenStore } from '../stores/revokedTokenStore.js';
+import { userStore } from '../stores/userStore.js';
+import { toPublicUser } from '../utils/toPublicUser.js';
 import { REFRESH_COOKIE_NAME } from '../constants.js';
 
 export const AuthController = {
@@ -40,6 +42,9 @@ export const AuthController = {
   }),
 
   me: asyncHandler(async (req: Request, res: Response) => {
-    res.json({ user: req.user });
+    if (!req.user) throw new UnauthorizedError('Not authenticated');
+    const rec = await userStore.findById(req.user.id);
+    if (!rec) throw new UnauthorizedError('User no longer exists');
+    res.json({ user: toPublicUser(rec) });
   }),
 };

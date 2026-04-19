@@ -16,6 +16,24 @@
 
 ---
 
+## 2026-04-19 · B00–B04 · BE Auth contract fix (pre-sprint)
+
+- **Outcome**: Fix tồn đọng bug [be-auth-contract-gaps.md](../sprint-01-auth-ui/bugs/be-auth-contract-gaps.md) từ sprint-01. 3 endpoint auth trả đúng public user shape; `/me` không còn `jti`.
+- **Tasks done**: B00 (serializer), B01 (permissions từ ROLE_PERMISSIONS), B02 (register), B03 (login), B04 (me + bỏ jti).
+- **Files**:
+  - `my-agent-backend/src/auth/utils/toPublicUser.ts` (new)
+  - `my-agent-backend/src/auth/services/AuthService.ts`
+  - `my-agent-backend/src/auth/controllers/AuthController.ts`
+- **Không phát sinh migration**: column `name` + `created_at` đã có sẵn ở model User. `permissions` derive từ role.
+- **Typecheck**: pass.
+- **Chưa làm**:
+  - B05 (integration test): repo chưa có test framework. Cần user quyết định vitest setup hay tạm verify bằng curl (TC-BE-01 → TC-BE-05).
+  - B06 (API docs): repo chưa có OpenAPI spec → skip.
+  - F00–F02 (FE revert workaround): chờ sau khi user verify BE fix.
+- **Follow-up**: verify curl 3 endpoint → đóng B05 → tiếp tục FE pre-sprint.
+
+---
+
 <!--
 Template entry (copy khi cần):
 

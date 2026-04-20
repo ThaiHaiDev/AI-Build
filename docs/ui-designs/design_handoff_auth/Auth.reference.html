@@ -1,0 +1,1073 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>My Agent — Đăng nhập / Đăng ký</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  :root {
+    --bg:       oklch(0.985 0.003 90);
+    --bg-2:     oklch(0.965 0.004 90);
+    --fg:       oklch(0.18 0.01 260);
+    --fg-2:     oklch(0.42 0.01 260);
+    --fg-3:     oklch(0.62 0.008 260);
+    --line:     oklch(0.90 0.004 260);
+    --line-2:   oklch(0.94 0.003 260);
+    --accent:   oklch(0.58 0.14 150);
+    --accent-2: oklch(0.96 0.04 150);
+    --danger:   oklch(0.58 0.18 25);
+    --warn:     oklch(0.72 0.15 75);
+
+    /* terminal variant */
+    --term-bg:  oklch(0.16 0.01 260);
+    --term-fg:  oklch(0.94 0.01 150);
+    --term-dim: oklch(0.62 0.02 150);
+  }
+  html, body, #root { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "ss01","cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+  /* crisp focus ring */
+  .ring-focus:focus { outline: none; box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 35%, transparent); border-color: var(--accent); }
+
+  /* Subtle grid background for the right panel */
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, color-mix(in oklch, var(--fg) 5%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklch, var(--fg) 5%, transparent) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  /* Terminal variant */
+  .term { background: var(--term-bg); color: var(--term-fg); }
+  .term input, .term .input { background: transparent; color: var(--term-fg); }
+
+  @keyframes blink { 50% { opacity: 0 } }
+  .caret::after { content: "▍"; margin-left: 2px; animation: blink 1.1s steps(2) infinite; color: var(--accent); }
+
+  /* input reset */
+  input[type="text"], input[type="email"], input[type="password"] {
+    appearance: none;
+  }
+
+  /* tick */
+  @keyframes drawTick { from { stroke-dashoffset: 24 } to { stroke-dashoffset: 0 } }
+  .tick path { stroke-dasharray: 24; animation: drawTick .45s ease-out forwards; }
+
+  /* subtle shimmer for skeleton */
+  @keyframes shimmer { from { background-position: -200px 0 } to { background-position: 200px 0 } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+  // Tweakable defaults — editable via Tweaks toolbar
+  window.TWEAKS = /*EDITMODE-BEGIN*/{
+    "variant": "split",
+    "mode": "login",
+    "accentHue": 150,
+    "locale": "vi"
+  }/*EDITMODE-END*/;
+</script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useMemo, useRef } = React;
+
+/* ---------------- i18n (minimal, from the repo's auth.json) ---------------- */
+const L = {
+  vi: {
+    brand:          "My Agent",
+    brand_sub:      "Internal platform",
+    login_tab:      "Đăng nhập",
+    register_tab:   "Đăng ký",
+    login_title:    "Đăng nhập vào tài khoản",
+    login_sub:      "Đăng nhập bằng email công ty của bạn",
+    reg_title:      "Tạo tài khoản mới",
+    reg_sub:        "Sử dụng email công ty để tạo tài khoản nội bộ",
+    email:          "Email công ty",
+    email_ph:       "ten.ban@company.vn",
+    password:       "Mật khẩu",
+    password_ph:    "Nhập mật khẩu",
+    password_new_ph:"Ít nhất 10 ký tự, có số & ký tự đặc biệt",
+    name:           "Họ và tên",
+    name_ph:        "Nguyễn Văn A",
+    team:           "Phòng ban",
+    confirm:        "Nhập lại mật khẩu",
+    remember:       "Giữ đăng nhập 30 ngày trên thiết bị này",
+    submit_login:   "Đăng nhập",
+    submitting:     "Đang xác thực…",
+    submit_reg:     "Tạo tài khoản",
+    submitting_reg: "Đang tạo tài khoản…",
+    no_account:     "Chưa có tài khoản?",
+    has_account:    "Đã có tài khoản?",
+    to_register:    "Đăng ký ngay",
+    to_login:       "Đăng nhập",
+    forgot:         "Quên mật khẩu?",
+    weak:           "Yếu",
+    medium:         "Trung bình",
+    strong:         "Mạnh",
+    err_email:      "Email không hợp lệ",
+    err_pwd_short:  "Mật khẩu tối thiểu 10 ký tự",
+    err_pwd_match:  "Mật khẩu nhập lại không khớp",
+    err_required:   "Bắt buộc",
+    err_creds:      "Email hoặc mật khẩu không đúng",
+    ok_login:       "Đăng nhập thành công. Đang chuyển hướng…",
+    ok_reg:         "Tài khoản đã được tạo. Đang chuyển hướng…",
+    footer_legal:   "© 2026 Internal Tools · v2.8.4",
+    tos:            "Bằng việc tiếp tục, bạn đồng ý với Chính sách sử dụng nội bộ",
+    status_title:   "Trạng thái hệ thống",
+    all_ok:         "Mọi dịch vụ đang hoạt động",
+    recent_login:   "Đăng nhập gần nhất",
+    never:          "Chưa có",
+    hint:           "Sử dụng email công ty đã được cấp bởi bộ phận IT.",
+    lang_label:     "Ngôn ngữ",
+  },
+  en: {
+    brand:          "My Agent",
+    brand_sub:      "Internal platform",
+    login_tab:      "Sign in",
+    register_tab:   "Sign up",
+    login_title:    "Sign in to your account",
+    login_sub:      "Use your work email to continue",
+    reg_title:      "Create a new account",
+    reg_sub:        "Use your work email to create an internal account",
+    email:          "Work email",
+    email_ph:       "you.name@company.com",
+    password:       "Password",
+    password_ph:    "Enter password",
+    password_new_ph:"At least 10 chars incl. number & symbol",
+    name:           "Full name",
+    name_ph:        "Jane Doe",
+    team:           "Department",
+    confirm:        "Confirm password",
+    remember:       "Stay signed in for 30 days on this device",
+    submit_login:   "Sign in",
+    submitting:     "Authenticating…",
+    submit_reg:     "Create account",
+    submitting_reg: "Creating account…",
+    no_account:     "No account yet?",
+    has_account:    "Already have an account?",
+    to_register:    "Sign up",
+    to_login:       "Sign in",
+    forgot:         "Forgot password?",
+    weak:           "Weak",
+    medium:         "Medium",
+    strong:         "Strong",
+    err_email:      "Invalid email address",
+    err_pwd_short:  "Password must be at least 10 characters",
+    err_pwd_match:  "Passwords do not match",
+    err_required:   "Required",
+    err_creds:      "Incorrect email or password",
+    ok_login:       "Signed in successfully. Redirecting…",
+    ok_reg:         "Account created. Redirecting…",
+    footer_legal:   "© 2026 Internal Tools · v2.8.4",
+    tos:            "By continuing you agree to the Internal Usage Policy",
+    status_title:   "System status",
+    all_ok:         "All services operational",
+    recent_login:   "Last sign-in",
+    never:          "Never",
+    hint:           "Use the work email issued by your IT department.",
+    lang_label:     "Language",
+  },
+};
+const useT = (locale="vi") => (k) => (L[locale] && L[locale][k]) ?? (L.vi[k] ?? k);
+
+/* ---------------- tiny primitives ---------------- */
+const cn = (...xs) => xs.filter(Boolean).join(" ");
+
+function Label({ children, htmlFor, hint }) {
+  return (
+    <label htmlFor={htmlFor} className="flex items-center justify-between mb-1.5">
+      <span className="text-[13px] font-medium" style={{color:"var(--fg)"}}>{children}</span>
+      {hint && <span className="text-[12px]" style={{color:"var(--fg-3)"}}>{hint}</span>}
+    </label>
+  );
+}
+
+function Field({ id, label, hint, error, children }) {
+  return (
+    <div>
+      <Label htmlFor={id} hint={hint}>{label}</Label>
+      {children}
+      <div className="min-h-[18px] mt-1 text-[12px]" style={{color: "var(--danger)"}}>
+        {error || ""}
+      </div>
+    </div>
+  );
+}
+
+function TextInput({ invalid, leading, trailing, ...props }) {
+  return (
+    <div className={cn(
+      "flex items-center gap-2 rounded-md border bg-white transition-colors",
+      invalid ? "border-[color:var(--danger)]" : "border-[color:var(--line)]",
+      "focus-within:border-[color:var(--accent)] focus-within:shadow-[0_0_0_3px_color-mix(in_oklch,var(--accent)_30%,transparent)]"
+    )}>
+      {leading && <span className="pl-3 text-[color:var(--fg-3)]">{leading}</span>}
+      <input
+        {...props}
+        className={cn(
+          "flex-1 bg-transparent py-2.5 pr-3 text-[14px] placeholder:text-[color:var(--fg-3)] focus:outline-none",
+          leading ? "pl-1" : "pl-3"
+        )}
+      />
+      {trailing}
+    </div>
+  );
+}
+
+function Checkbox({ checked, onChange, id, children }) {
+  return (
+    <label htmlFor={id} className="flex items-start gap-2.5 cursor-pointer select-none">
+      <span className="relative mt-0.5 inline-block">
+        <input
+          id={id}
+          type="checkbox"
+          checked={checked}
+          onChange={e => onChange(e.target.checked)}
+          className="peer sr-only"
+        />
+        <span className={cn(
+          "w-[16px] h-[16px] rounded border grid place-items-center transition",
+          checked
+            ? "bg-[color:var(--accent)] border-[color:var(--accent)]"
+            : "bg-white border-[color:var(--line)]"
+        )}>
+          {checked && (
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          )}
+        </span>
+      </span>
+      <span className="text-[13px]" style={{color:"var(--fg-2)"}}>{children}</span>
+    </label>
+  );
+}
+
+/* icons */
+const I = {
+  mail: (p) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" {...p}><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.6"/><path d="M3 7l9 6 9-6" stroke="currentColor" strokeWidth="1.6"/></svg>,
+  lock: (p) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" {...p}><rect x="4" y="11" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1.6"/><path d="M8 11V8a4 4 0 018 0v3" stroke="currentColor" strokeWidth="1.6"/></svg>,
+  user: (p) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" {...p}><circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.6"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6" stroke="currentColor" strokeWidth="1.6"/></svg>,
+  team: (p) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" {...p}><path d="M3 19c.8-2.5 3-4 5-4s4.2 1.5 5 4M14 19c.8-2.5 3-4 5-4 .7 0 1.4.2 2 .5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/><circle cx="8" cy="9" r="3" stroke="currentColor" strokeWidth="1.6"/><circle cx="17" cy="10" r="2.5" stroke="currentColor" strokeWidth="1.6"/></svg>,
+  eye: (p) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" {...p}><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" stroke="currentColor" strokeWidth="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6"/></svg>,
+  eyeOff: (p) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" {...p}><path d="M3 3l18 18M10.6 6.1A10.8 10.8 0 0112 6c6.5 0 10 7 10 7a17.5 17.5 0 01-3.3 4.2M6.3 7.5A17.5 17.5 0 002 13s3.5 7 10 7c1.7 0 3.2-.4 4.5-1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>,
+  arrow: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  shield: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6l8-3z" stroke="currentColor" strokeWidth="1.6"/><path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  dot: (p) => <span className="inline-block w-1.5 h-1.5 rounded-full" {...p}/>,
+};
+
+function Logo({ size=28 }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <div className="relative" style={{width: size, height: size}}>
+        <div className="absolute inset-0 rounded-md"
+             style={{background:"var(--fg)"}}/>
+        <div className="absolute inset-[3px] rounded-[4px] grid place-items-center"
+             style={{background:"var(--bg)"}}>
+          <div className="w-[8px] h-[8px] rounded-full" style={{background:"var(--accent)"}}/>
+        </div>
+      </div>
+      <div className="leading-tight">
+        <div className="font-semibold tracking-tight text-[15px]">my-agent</div>
+        <div className="mono text-[10px] uppercase tracking-[0.12em]" style={{color:"var(--fg-3)"}}>internal · v2.8.4</div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- validation + strength ---------------- */
+function pwScore(p){
+  if(!p) return 0;
+  let s = 0;
+  if(p.length >= 8) s++;
+  if(p.length >= 12) s++;
+  if(/[A-Z]/.test(p) && /[a-z]/.test(p)) s++;
+  if(/\d/.test(p)) s++;
+  if(/[^A-Za-z0-9]/.test(p)) s++;
+  return Math.min(s, 4);
+}
+function pwLabel(s, t){
+  if(s <= 1) return t("weak");
+  if(s <= 3) return t("medium");
+  return t("strong");
+}
+function pwColor(s){
+  if(s <= 1) return "var(--danger)";
+  if(s <= 3) return "var(--warn)";
+  return "var(--accent)";
+}
+
+function validateLogin(v, t){
+  const e = {};
+  if(!v.email) e.email = t("err_required");
+  else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) e.email = t("err_email");
+  if(!v.password) e.password = t("err_required");
+  return e;
+}
+function validateRegister(v, t){
+  const e = {};
+  if(!v.name) e.name = t("err_required");
+  if(!v.email) e.email = t("err_required");
+  else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) e.email = t("err_email");
+  if(!v.password) e.password = t("err_required");
+  else if(v.password.length < 10) e.password = t("err_pwd_short");
+  if(v.password !== v.confirm) e.confirm = t("err_pwd_match");
+  return e;
+}
+
+/* ---------------- hooks ---------------- */
+function useAuthForm(mode, t){
+  const [v, setV] = useState({ email:"", password:"", confirm:"", name:"", team:"Engineering", remember:true });
+  const [errors, setErrors] = useState({});
+  const [status, setStatus] = useState("idle"); // idle | submitting | error | success
+  const [topError, setTopError] = useState("");
+
+  useEffect(()=>{ setErrors({}); setTopError(""); setStatus("idle"); },[mode]);
+
+  const set = (k) => (e) => setV(prev => ({...prev, [k]: e?.target ? e.target.value : e}));
+
+  const submit = async (e) => {
+    e.preventDefault();
+    const errs = mode === "login" ? validateLogin(v,t) : validateRegister(v,t);
+    setErrors(errs);
+    if(Object.keys(errs).length) return;
+    setStatus("submitting");
+    setTopError("");
+    // fake server
+    await new Promise(r => setTimeout(r, 1100));
+    if(mode === "login" && v.email === "fail@company.vn") {
+      setStatus("error"); setTopError(t("err_creds")); return;
+    }
+    setStatus("success");
+  };
+
+  return { v, set, errors, status, topError, submit };
+}
+
+/* ============================================================
+   VARIANT A — Split with system status panel
+   ============================================================ */
+function VariantSplit({ mode, setMode, t, locale }){
+  const f = useAuthForm(mode, t);
+  const [showPw, setShowPw] = useState(false);
+  const s = pwScore(f.v.password);
+
+  return (
+    <div className="min-h-screen w-full grid lg:grid-cols-[1.05fr_1fr]">
+      {/* LEFT: form */}
+      <div className="flex flex-col px-6 sm:px-10 lg:px-16 py-8">
+        <header className="flex items-center justify-between">
+          <Logo/>
+          <div className="text-[12px] mono" style={{color:"var(--fg-3)"}}>
+            {mode === "login" ? t("no_account") : t("has_account")}{" "}
+            <button
+              onClick={()=>setMode(mode === "login" ? "register" : "login")}
+              className="underline underline-offset-4 decoration-dotted hover:text-[color:var(--fg)] transition"
+              style={{color:"var(--fg)"}}
+            >
+              {mode === "login" ? t("to_register") : t("to_login")}
+            </button>
+          </div>
+        </header>
+
+        <main className="flex-1 flex items-center">
+          <div className="w-full max-w-[440px] mx-auto lg:mx-0">
+            <div className="mb-7">
+              <div className="mono text-[11px] uppercase tracking-[0.18em] mb-3" style={{color:"var(--fg-3)"}}>
+                <span style={{color:"var(--accent)"}}>●</span>&nbsp; {mode === "login" ? "auth / signin" : "auth / signup"}
+              </div>
+              <h1 className="text-[30px] sm:text-[34px] font-semibold tracking-tight leading-[1.1]">
+                {mode === "login" ? t("login_title") : t("reg_title")}
+              </h1>
+              <p className="mt-2 text-[15px]" style={{color:"var(--fg-2)"}}>
+                {mode === "login" ? t("login_sub") : t("reg_sub")}
+              </p>
+            </div>
+
+            {/* Mode switch pill */}
+            <div className="inline-flex p-0.5 rounded-lg border mb-6"
+                 style={{borderColor:"var(--line)", background:"var(--bg-2)"}}>
+              {["login","register"].map(m => (
+                <button key={m} onClick={()=>setMode(m)}
+                  className={cn("px-3.5 py-1.5 rounded-md text-[13px] font-medium transition",
+                    mode === m ? "bg-white shadow-sm" : "opacity-60 hover:opacity-100"
+                  )}
+                  style={{color: mode===m ? "var(--fg)" : "var(--fg-2)"}}
+                >{m === "login" ? t("login_tab") : t("register_tab")}</button>
+              ))}
+            </div>
+
+            <div className="mb-5"/>
+
+            {/* Top error */}
+            {f.topError && (
+              <div className="mb-4 flex items-start gap-2.5 rounded-md border px-3 py-2.5"
+                   style={{borderColor:"color-mix(in oklch, var(--danger) 30%, var(--line))",
+                           background:"color-mix(in oklch, var(--danger) 7%, transparent)",
+                           color:"var(--danger)"}}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="mt-0.5 shrink-0">
+                  <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6"/>
+                  <path d="M12 7v6M12 16.5v.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                </svg>
+                <div className="text-[13px]">{f.topError}</div>
+              </div>
+            )}
+
+            {/* FORM */}
+            <form onSubmit={f.submit} noValidate className="space-y-3">
+              {mode === "register" && (
+                <div className="grid grid-cols-2 gap-3">
+                  <Field id="name" label={t("name")} error={f.errors.name}>
+                    <TextInput id="name" leading={<I.user/>} placeholder={t("name_ph")}
+                      value={f.v.name} onChange={f.set("name")} invalid={!!f.errors.name}/>
+                  </Field>
+                  <Field id="team" label={t("team")}>
+                    <div className="flex items-center gap-2 rounded-md border bg-white pl-3"
+                         style={{borderColor:"var(--line)"}}>
+                      <I.team/>
+                      <select value={f.v.team} onChange={f.set("team")}
+                        className="flex-1 bg-transparent py-2.5 pr-3 text-[14px] focus:outline-none">
+                        <option>Engineering</option>
+                        <option>Product</option>
+                        <option>Design</option>
+                        <option>Data</option>
+                        <option>Operations</option>
+                      </select>
+                    </div>
+                  </Field>
+                </div>
+              )}
+
+              <Field id="email" label={t("email")}
+                hint={mode==="register" ? "@company.vn" : null}
+                error={f.errors.email}>
+                <TextInput id="email" type="email" leading={<I.mail/>}
+                  placeholder={t("email_ph")}
+                  value={f.v.email} onChange={f.set("email")}
+                  invalid={!!f.errors.email} autoComplete="email"/>
+              </Field>
+
+              <Field id="password" label={t("password")}
+                hint={mode === "login" ? <a href="#" className="hover:text-[color:var(--fg)] transition">{t("forgot")}</a> : null}
+                error={f.errors.password}>
+                <TextInput id="password"
+                  type={showPw ? "text" : "password"}
+                  leading={<I.lock/>}
+                  placeholder={mode === "login" ? t("password_ph") : t("password_new_ph")}
+                  value={f.v.password} onChange={f.set("password")}
+                  invalid={!!f.errors.password}
+                  autoComplete={mode === "login" ? "current-password" : "new-password"}
+                  trailing={
+                    <button type="button" onClick={()=>setShowPw(s=>!s)}
+                      className="pr-3 text-[color:var(--fg-3)] hover:text-[color:var(--fg)] transition"
+                      aria-label={showPw ? "Hide password" : "Show password"}>
+                      {showPw ? <I.eyeOff/> : <I.eye/>}
+                    </button>
+                  }/>
+                {mode === "register" && f.v.password && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <div className="flex-1 flex gap-1">
+                      {[0,1,2,3].map(i => (
+                        <div key={i} className="flex-1 h-1 rounded-full transition-colors"
+                             style={{background: i < s ? pwColor(s) : "var(--line)"}}/>
+                      ))}
+                    </div>
+                    <div className="mono text-[11px]" style={{color: pwColor(s)}}>{pwLabel(s, t)}</div>
+                  </div>
+                )}
+              </Field>
+
+              {mode === "register" && (
+                <Field id="confirm" label={t("confirm")} error={f.errors.confirm}>
+                  <TextInput id="confirm"
+                    type={showPw ? "text" : "password"}
+                    leading={<I.lock/>}
+                    placeholder={t("password_ph")}
+                    value={f.v.confirm} onChange={f.set("confirm")}
+                    invalid={!!f.errors.confirm}/>
+                </Field>
+              )}
+
+              {mode === "login" && (
+                <Checkbox id="rem" checked={f.v.remember} onChange={v=>f.set("remember")(v)}>
+                  {t("remember")}
+                </Checkbox>
+              )}
+
+              <button type="submit" disabled={f.status === "submitting" || f.status === "success"}
+                className={cn(
+                  "group mt-2 w-full flex items-center justify-center gap-2 py-3 rounded-md text-[14px] font-semibold transition",
+                  (f.status === "submitting" || f.status === "success")
+                    ? "opacity-70 cursor-wait"
+                    : "hover:brightness-110 active:scale-[.995]"
+                )}
+                style={{background:"var(--fg)", color:"var(--bg)"}}>
+                {f.status === "success" ? (
+                  <>
+                    <svg className="tick" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M4 12l6 6L20 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    {mode === "login" ? t("ok_login") : t("ok_reg")}
+                  </>
+                ) : f.status === "submitting" ? (
+                  <>
+                    <Spinner/>
+                    {mode === "login" ? t("submitting") : t("submitting_reg")}
+                  </>
+                ) : (
+                  <>
+                    {mode === "login" ? t("submit_login") : t("submit_reg")}
+                    <I.arrow className="transition-transform group-hover:translate-x-0.5"/>
+                  </>
+                )}
+              </button>
+
+              <p className="mt-2 text-center text-[12px]" style={{color:"var(--fg-3)"}}>
+                {mode === "register" ? t("tos") : t("hint")}
+              </p>
+            </form>
+          </div>
+        </main>
+
+        <footer className="flex items-center justify-between text-[12px] mono" style={{color:"var(--fg-3)"}}>
+          <span>{t("footer_legal")}</span>
+          <span className="flex items-center gap-3">
+            <a className="hover:text-[color:var(--fg)]" href="#">docs</a>
+            <a className="hover:text-[color:var(--fg)]" href="#">status</a>
+            <a className="hover:text-[color:var(--fg)]" href="#">contact</a>
+          </span>
+        </footer>
+      </div>
+
+      {/* RIGHT: brand panel — ảnh thương hiệu thuần túy, không có số liệu/hệ thống */}
+      <aside className="hidden lg:flex relative overflow-hidden border-l"
+        style={{borderColor:"var(--line)", background:"var(--fg)"}}>
+        <div className="absolute inset-0 opacity-[0.07]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)",
+            backgroundSize: "40px 40px"
+          }}/>
+        <div
+          className="absolute -top-40 -right-40 w-[520px] h-[520px] rounded-full blur-3xl opacity-30"
+          style={{background: "var(--accent)"}}/>
+
+        <div className="relative flex-1 p-12 flex flex-col justify-between" style={{color:"var(--bg)"}}>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full" style={{background:"var(--accent)"}}/>
+            <span className="mono text-[11px] uppercase tracking-[0.18em]" style={{color:"color-mix(in oklch, white 65%, transparent)"}}>
+              my-agent · internal
+            </span>
+          </div>
+
+          <div className="max-w-[420px]">
+            <h2 className="text-[40px] leading-[1.08] font-semibold tracking-tight">
+              {locale === "en"
+                ? <>The internal workspace for <span style={{color:"var(--accent)"}}>AI agents</span>.</>
+                : <>Không gian nội bộ cho <span style={{color:"var(--accent)"}}>AI agents</span>.</>}
+            </h2>
+            <p className="mt-4 text-[15px]" style={{color:"color-mix(in oklch, white 70%, transparent)"}}>
+              {locale === "en"
+                ? "Sign in with your company email to manage agents, prompts and shared knowledge."
+                : "Đăng nhập bằng email công ty để quản lý agent, prompt và tri thức chung của đội ngũ."}
+            </p>
+          </div>
+
+          <div className="mono text-[11px]" style={{color:"color-mix(in oklch, white 45%, transparent)"}}>
+            © 2026 · Internal use only
+          </div>
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+function InfoCell({k, v}){
+  return (
+    <div className="rounded-md border bg-white/70 px-3 py-2" style={{borderColor:"var(--line)"}}>
+      <div className="mono text-[10px] uppercase tracking-[0.16em]" style={{color:"var(--fg-3)"}}>{k}</div>
+      <div className="mono text-[13px] mt-0.5">{v}</div>
+    </div>
+  );
+}
+
+function Spinner(){
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="animate-spin">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity=".25" strokeWidth="2.5"/>
+      <path d="M21 12a9 9 0 00-9-9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+function SSOIcon(){
+  return (
+    <span className="w-5 h-5 rounded grid place-items-center" style={{background:"var(--fg)"}}>
+      <span className="w-2 h-2 rounded-sm" style={{background:"var(--accent)"}}/>
+    </span>
+  );
+}
+
+/* ============================================================
+   VARIANT B — Centered minimal card
+   ============================================================ */
+function VariantCard({ mode, setMode, t }){
+  const f = useAuthForm(mode, t);
+  const [showPw, setShowPw] = useState(false);
+  const s = pwScore(f.v.password);
+
+  return (
+    <div className="min-h-screen w-full flex flex-col items-center justify-center px-5 py-10"
+         style={{background:"var(--bg-2)"}}>
+      <div className="w-full max-w-[420px]">
+        <div className="flex items-center justify-center mb-6"><Logo/></div>
+
+        <div className="rounded-xl border bg-white shadow-[0_1px_0_rgba(0,0,0,0.03),0_20px_40px_-24px_rgba(0,0,0,0.12)] overflow-hidden"
+             style={{borderColor:"var(--line)"}}>
+          {/* Tabs */}
+          <div className="relative grid grid-cols-2 border-b" style={{borderColor:"var(--line-2)"}}>
+            {["login","register"].map(m => (
+              <button key={m} onClick={()=>setMode(m)}
+                className={cn("py-3 text-[13px] font-medium transition",
+                  mode === m ? "text-[color:var(--fg)]" : "text-[color:var(--fg-3)] hover:text-[color:var(--fg-2)]")}>
+                {m === "login" ? t("login_tab") : t("register_tab")}
+              </button>
+            ))}
+            <div className="absolute bottom-0 h-[2px] transition-all"
+              style={{
+                background: "var(--fg)",
+                width: "50%",
+                transform: `translateX(${mode === "login" ? "0%" : "100%"})`
+              }}/>
+          </div>
+
+          <div className="p-6">
+            <h2 className="text-[18px] font-semibold tracking-tight">
+              {mode === "login" ? t("login_title") : t("reg_title")}
+            </h2>
+            <p className="text-[13px] mt-0.5" style={{color:"var(--fg-3)"}}>
+              {mode === "login" ? t("login_sub") : t("reg_sub")}
+            </p>
+
+            <div className="mt-5"/>
+
+            {f.topError && (
+              <div className="mb-3 text-[12px] px-3 py-2 rounded border"
+                style={{borderColor:"color-mix(in oklch, var(--danger) 30%, var(--line))",
+                        background:"color-mix(in oklch, var(--danger) 7%, transparent)",
+                        color:"var(--danger)"}}>
+                {f.topError}
+              </div>
+            )}
+
+            <form onSubmit={f.submit} noValidate className="space-y-2">
+              {mode === "register" && (
+                <Field id="b-name" label={t("name")} error={f.errors.name}>
+                  <TextInput id="b-name" leading={<I.user/>} placeholder={t("name_ph")}
+                    value={f.v.name} onChange={f.set("name")} invalid={!!f.errors.name}/>
+                </Field>
+              )}
+              <Field id="b-email" label={t("email")} error={f.errors.email}>
+                <TextInput id="b-email" type="email" leading={<I.mail/>}
+                  placeholder={t("email_ph")} value={f.v.email}
+                  onChange={f.set("email")} invalid={!!f.errors.email}/>
+              </Field>
+              <Field id="b-pw" label={t("password")}
+                hint={mode === "login" ? <a href="#" className="hover:text-[color:var(--fg)]">{t("forgot")}</a> : null}
+                error={f.errors.password}>
+                <TextInput id="b-pw" type={showPw ? "text" : "password"}
+                  leading={<I.lock/>}
+                  placeholder={mode === "login" ? t("password_ph") : t("password_new_ph")}
+                  value={f.v.password} onChange={f.set("password")}
+                  invalid={!!f.errors.password}
+                  trailing={
+                    <button type="button" onClick={()=>setShowPw(x=>!x)}
+                      className="pr-3 text-[color:var(--fg-3)] hover:text-[color:var(--fg)]">
+                      {showPw ? <I.eyeOff/> : <I.eye/>}
+                    </button>
+                  }/>
+                {mode === "register" && f.v.password && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <div className="flex-1 flex gap-1">
+                      {[0,1,2,3].map(i => (
+                        <div key={i} className="flex-1 h-1 rounded-full transition-colors"
+                             style={{background: i < s ? pwColor(s) : "var(--line)"}}/>
+                      ))}
+                    </div>
+                    <div className="mono text-[11px]" style={{color: pwColor(s)}}>{pwLabel(s, t)}</div>
+                  </div>
+                )}
+              </Field>
+              {mode === "register" && (
+                <Field id="b-c" label={t("confirm")} error={f.errors.confirm}>
+                  <TextInput id="b-c" type={showPw ? "text" : "password"} leading={<I.lock/>}
+                    placeholder={t("password_ph")} value={f.v.confirm}
+                    onChange={f.set("confirm")} invalid={!!f.errors.confirm}/>
+                </Field>
+              )}
+              {mode === "login" && (
+                <div className="pt-1"><Checkbox id="b-rem" checked={f.v.remember} onChange={v=>f.set("remember")(v)}>
+                  {t("remember")}
+                </Checkbox></div>
+              )}
+              <button type="submit" disabled={f.status === "submitting" || f.status === "success"}
+                className={cn("mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-md text-[14px] font-semibold transition",
+                  (f.status === "submitting" || f.status === "success") ? "opacity-70 cursor-wait" : "hover:brightness-110")}
+                style={{background:"var(--fg)", color:"var(--bg)"}}>
+                {f.status === "success" ? (<><svg className="tick" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>{mode==="login"?t("ok_login"):t("ok_reg")}</>)
+                : f.status === "submitting" ? (<><Spinner/> {mode==="login"?t("submitting"):t("submitting_reg")}</>)
+                : (<>{mode === "login" ? t("submit_login") : t("submit_reg")} <I.arrow/></>)}
+              </button>
+            </form>
+          </div>
+
+          <div className="border-t px-6 py-3 flex items-center justify-between text-[11px] mono"
+               style={{borderColor:"var(--line-2)", color:"var(--fg-3)", background:"var(--bg)"}}>
+            <span className="flex items-center gap-1.5"><I.shield/> TLS 1.3 · internal auth</span>
+            <span>v2.8.4</span>
+          </div>
+        </div>
+
+        <p className="text-center text-[12px] mt-5" style={{color:"var(--fg-3)"}}>
+          {t("footer_legal")}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   VARIANT C — Terminal
+   ============================================================ */
+function VariantTerminal({ mode, setMode, t }){
+  const f = useAuthForm(mode, t);
+  const [showPw, setShowPw] = useState(false);
+  const [booted, setBooted] = useState(false);
+  useEffect(()=>{ const id = setTimeout(()=>setBooted(true), 400); return ()=>clearTimeout(id); },[]);
+
+  const cmd = mode === "login" ? "my-agent auth login" : "my-agent auth register";
+
+  return (
+    <div className="min-h-screen w-full grid place-items-center p-6 term">
+      <div className="w-full max-w-[640px] rounded-lg overflow-hidden border shadow-2xl"
+           style={{borderColor:"color-mix(in oklch, white 10%, var(--term-bg))"}}>
+        {/* titlebar */}
+        <div className="flex items-center gap-2 px-3 py-2"
+             style={{background:"color-mix(in oklch, white 6%, var(--term-bg))"}}>
+          <span className="w-3 h-3 rounded-full" style={{background:"#ff5f57"}}/>
+          <span className="w-3 h-3 rounded-full" style={{background:"#febc2e"}}/>
+          <span className="w-3 h-3 rounded-full" style={{background:"#28c840"}}/>
+          <div className="flex-1 text-center mono text-[12px]" style={{color:"var(--term-dim)"}}>
+            ~/my-agent — zsh — 96×24
+          </div>
+          <div className="flex items-center gap-1">
+            {["login","register"].map(m => (
+              <button key={m} onClick={()=>setMode(m)}
+                className={cn("mono text-[11px] px-2 py-0.5 rounded transition",
+                  mode === m ? "" : "opacity-50 hover:opacity-80"
+                )}
+                style={{
+                  background: mode===m ? "color-mix(in oklch, var(--accent) 25%, var(--term-bg))" : "transparent",
+                  color: mode===m ? "var(--term-fg)" : "var(--term-dim)"
+                }}>
+                {m}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* body */}
+        <div className="p-5 mono text-[13.5px] leading-[1.7]" style={{color:"var(--term-fg)"}}>
+          <div style={{color:"var(--term-dim)"}}>
+            <span style={{color:"var(--accent)"}}>●</span> connected to <span style={{color:"var(--term-fg)"}}>auth.company.vn</span> (v2.8.4)
+          </div>
+          <div style={{color:"var(--term-dim)"}}>
+            tls: TLS_AES_256_GCM_SHA384 · cipher: strong · mfa: required
+          </div>
+          <div className="mt-2">
+            <span style={{color:"var(--accent)"}}>$</span> {booted ? cmd : <span className="caret"/>}
+          </div>
+
+          <div className="mt-4 p-4 rounded border"
+               style={{borderColor:"color-mix(in oklch, white 8%, transparent)",
+                       background:"color-mix(in oklch, white 3%, transparent)"}}>
+            <div className="text-[12px]" style={{color:"var(--term-dim)"}}>
+              {mode === "login" ? t("login_sub") : t("reg_sub")}
+            </div>
+
+            <form onSubmit={f.submit} noValidate className="mt-3 space-y-2.5">
+              {mode === "register" && (
+                <TermField prompt="name" error={f.errors.name}>
+                  <input value={f.v.name} onChange={f.set("name")}
+                    placeholder={t("name_ph")} autoComplete="name"
+                    className="flex-1 bg-transparent outline-none placeholder:text-[color:var(--term-dim)]"/>
+                </TermField>
+              )}
+
+              <TermField prompt="email" error={f.errors.email}>
+                <input type="email" value={f.v.email} onChange={f.set("email")}
+                  placeholder={t("email_ph")} autoComplete="email"
+                  className="flex-1 bg-transparent outline-none placeholder:text-[color:var(--term-dim)]"/>
+              </TermField>
+
+              <TermField prompt="password" error={f.errors.password}>
+                <input type={showPw?"text":"password"} value={f.v.password} onChange={f.set("password")}
+                  placeholder={mode==="login" ? t("password_ph") : t("password_new_ph")}
+                  className="flex-1 bg-transparent outline-none placeholder:text-[color:var(--term-dim)]"/>
+                <button type="button" onClick={()=>setShowPw(x=>!x)}
+                  className="text-[11px] px-1.5 py-0.5 rounded hover:opacity-80"
+                  style={{color:"var(--term-dim)", border:"1px solid color-mix(in oklch, white 10%, transparent)"}}>
+                  {showPw ? "hide" : "show"}
+                </button>
+              </TermField>
+
+              {mode === "register" && (
+                <TermField prompt="confirm" error={f.errors.confirm}>
+                  <input type={showPw?"text":"password"} value={f.v.confirm} onChange={f.set("confirm")}
+                    className="flex-1 bg-transparent outline-none"/>
+                </TermField>
+              )}
+
+              {f.topError && (
+                <div className="text-[12.5px]" style={{color:"#ff8a7a"}}>
+                  ✗ error: {f.topError}
+                </div>
+              )}
+
+              <div className="pt-2 flex items-center justify-between gap-4">
+                <div className="text-[11.5px]" style={{color:"var(--term-dim)"}}>
+                  {mode === "login"
+                    ? <><kbd className="px-1 py-0.5 rounded" style={{background:"color-mix(in oklch, white 8%, transparent)"}}>↵</kbd> to submit · <a href="#" className="underline underline-offset-2">{t("forgot")}</a></>
+                    : "token → ~/.my-agent/config"}
+                </div>
+                <button type="submit" disabled={f.status==="submitting"||f.status==="success"}
+                  className={cn("mono text-[12.5px] px-3.5 py-1.5 rounded flex items-center gap-2",
+                    (f.status==="submitting"||f.status==="success") ? "opacity-70 cursor-wait" : "hover:brightness-110")}
+                  style={{background:"var(--accent)", color:"var(--term-bg)", fontWeight:600}}>
+                  {f.status === "success"
+                    ? (<><span>✓</span> ok</>)
+                    : f.status === "submitting"
+                      ? (<><Spinner/> running…</>)
+                      : (<><span>▶</span> {mode === "login" ? "login" : "register"}</>)}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* log output */}
+          <div className="mt-3 text-[12px]" style={{color:"var(--term-dim)"}}>
+            {f.status === "submitting" && <div>[info] requesting token …</div>}
+            {f.status === "success" && (
+              <>
+                <div style={{color:"var(--accent)"}}>[ok] authenticated as {f.v.email || "user@company.vn"}</div>
+                <div>[info] redirecting to /dashboard …</div>
+              </>
+            )}
+            {f.status === "idle" && <div>{mode === "login" ? t("hint") : t("tos")}</div>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TermField({ prompt, error, children }){
+  return (
+    <div>
+      <div className="flex items-center gap-2">
+        <span style={{color:"var(--accent)", width: 68, flexShrink: 0}}>{prompt}</span>
+        <span style={{color:"var(--term-dim)"}}>:</span>
+        {children}
+      </div>
+      {error && <div className="ml-[76px] text-[11.5px]" style={{color:"#ff8a7a"}}>→ {error}</div>}
+    </div>
+  );
+}
+
+/* ============================================================
+   Language toggle (fixed top-right)
+   ============================================================ */
+function LangToggle({ locale, setLocale, variant }){
+  const onTerm = variant === "term";
+  return (
+    <div className="fixed top-4 right-4 z-40">
+      <div className={cn(
+        "inline-flex items-center p-0.5 rounded-full border backdrop-blur",
+        onTerm ? "" : "bg-white/80"
+      )} style={{
+        borderColor: onTerm ? "color-mix(in oklch, white 12%, transparent)" : "var(--line)",
+        background: onTerm ? "color-mix(in oklch, white 6%, var(--term-bg))" : undefined
+      }}>
+        <GlobeIcon onTerm={onTerm}/>
+        {[
+          ["vi","VI"],
+          ["en","EN"]
+        ].map(([k,label]) => (
+          <button key={k} onClick={()=>setLocale(k)}
+            className={cn("mono text-[11px] font-semibold px-2.5 py-1 rounded-full transition",
+              locale === k ? "" : "opacity-60 hover:opacity-100"
+            )}
+            style={{
+              background: locale === k ? (onTerm ? "var(--accent)" : "var(--fg)") : "transparent",
+              color: locale === k ? (onTerm ? "var(--term-bg)" : "var(--bg)") : (onTerm ? "var(--term-dim)" : "var(--fg-2)")
+            }}>
+            {label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function GlobeIcon({ onTerm }){
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="ml-2 mr-1"
+         style={{color: onTerm ? "var(--term-dim)" : "var(--fg-3)"}}>
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6"/>
+      <path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" stroke="currentColor" strokeWidth="1.6"/>
+    </svg>
+  );
+}
+
+/* ============================================================
+   Tweaks panel (edit mode)
+   ============================================================ */
+function TweaksPanel({ variant, setVariant, mode, setMode, locale, setLocale, onClose }){
+  return (
+    <div className="fixed bottom-4 right-4 w-[280px] rounded-xl border shadow-2xl z-50 overflow-hidden"
+         style={{borderColor:"var(--line)", background:"white"}}>
+      <div className="flex items-center justify-between px-3.5 py-2.5 border-b"
+           style={{borderColor:"var(--line-2)"}}>
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full" style={{background:"var(--accent)"}}/>
+          <span className="text-[13px] font-semibold">Tweaks</span>
+        </div>
+        <button onClick={onClose} className="text-[color:var(--fg-3)] hover:text-[color:var(--fg)]">✕</button>
+      </div>
+      <div className="p-3.5 space-y-4">
+        <div>
+          <div className="mono text-[10px] uppercase tracking-[0.16em] mb-2" style={{color:"var(--fg-3)"}}>layout</div>
+          <div className="grid grid-cols-3 gap-1.5">
+            {[
+              ["split","Split"],
+              ["card","Card"],
+              ["term","Terminal"]
+            ].map(([k,label])=>(
+              <button key={k} onClick={()=>setVariant(k)}
+                className={cn("py-1.5 rounded text-[12px] font-medium border transition",
+                  variant === k ? "bg-[color:var(--fg)] text-white border-[color:var(--fg)]" : "hover:bg-[color:var(--bg-2)]"
+                )}
+                style={{borderColor: variant===k ? "var(--fg)" : "var(--line)"}}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div className="mono text-[10px] uppercase tracking-[0.16em] mb-2" style={{color:"var(--fg-3)"}}>screen</div>
+          <div className="grid grid-cols-2 gap-1.5">
+            {[
+              ["login","Login"],
+              ["register","Register"]
+            ].map(([k,label])=>(
+              <button key={k} onClick={()=>setMode(k)}
+                className={cn("py-1.5 rounded text-[12px] font-medium border transition",
+                  mode === k ? "bg-[color:var(--fg)] text-white border-[color:var(--fg)]" : "hover:bg-[color:var(--bg-2)]"
+                )}
+                style={{borderColor: mode===k ? "var(--fg)" : "var(--line)"}}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div className="mono text-[10px] uppercase tracking-[0.16em] mb-2" style={{color:"var(--fg-3)"}}>language</div>
+          <div className="grid grid-cols-2 gap-1.5">
+            {[
+              ["vi","Tiếng Việt"],
+              ["en","English"]
+            ].map(([k,label])=>(
+              <button key={k} onClick={()=>setLocale(k)}
+                className={cn("py-1.5 rounded text-[12px] font-medium border transition",
+                  locale === k ? "bg-[color:var(--fg)] text-white border-[color:var(--fg)]" : "hover:bg-[color:var(--bg-2)]"
+                )}
+                style={{borderColor: locale===k ? "var(--fg)" : "var(--line)"}}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="text-[11px] mono" style={{color:"var(--fg-3)"}}>
+          tip: <span style={{color:"var(--fg-2)"}}>fail@company.vn</span> triggers login error
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   App
+   ============================================================ */
+function App(){
+  const [variant, setVariant] = useState(window.TWEAKS?.variant || "split");
+  const [mode, setMode] = useState(window.TWEAKS?.mode || "login");
+  const [locale, setLocale] = useState(window.TWEAKS?.locale || "vi");
+  const [tweaksOpen, setTweaksOpen] = useState(false);
+  const t = useT(locale);
+
+  // Edit-mode protocol
+  useEffect(() => {
+    const onMsg = (e) => {
+      const d = e.data || {};
+      if (d.type === "__activate_edit_mode") setTweaksOpen(true);
+      if (d.type === "__deactivate_edit_mode") setTweaksOpen(false);
+    };
+    window.addEventListener("message", onMsg);
+    window.parent?.postMessage({ type: "__edit_mode_available" }, "*");
+    return () => window.removeEventListener("message", onMsg);
+  }, []);
+
+  const persist = (key, value) => {
+    window.parent?.postMessage({ type: "__edit_mode_set_keys", edits: { [key]: value } }, "*");
+  };
+  const setVariantP = (v) => { setVariant(v); persist("variant", v); };
+  const setModeP    = (m) => { setMode(m);    persist("mode", m); };
+  const setLocaleP  = (l) => { setLocale(l);  persist("locale", l); };
+
+  const V = variant === "card" ? VariantCard : variant === "term" ? VariantTerminal : VariantSplit;
+  return (
+    <div data-screen-label={`${variant}-${mode}`}>
+      <LangToggle locale={locale} setLocale={setLocaleP} variant={variant}/>
+      <V mode={mode} setMode={setModeP} t={t} locale={locale}/>
+      {tweaksOpen && (
+        <TweaksPanel
+          variant={variant} setVariant={setVariantP}
+          mode={mode} setMode={setModeP}
+          locale={locale} setLocale={setLocaleP}
+          onClose={()=>setTweaksOpen(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

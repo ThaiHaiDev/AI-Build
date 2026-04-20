@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>My Agent — Home & Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  :root {
+    --bg: oklch(0.985 0.003 90);
+    --bg-2: oklch(0.965 0.004 90);
+    --fg: oklch(0.18 0.01 260);
+    --fg-2: oklch(0.42 0.01 260);
+    --fg-3: oklch(0.62 0.008 260);
+    --line: oklch(0.90 0.004 260);
+    --line-2: oklch(0.94 0.003 260);
+    --accent: oklch(0.58 0.14 150);
+    --accent-2: oklch(0.96 0.04 150);
+    --danger: oklch(0.58 0.18 25);
+    --warn: oklch(0.72 0.15 75);
+  }
+  html, body, #root { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "ss01","cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 30%, transparent);
+    border-color: var(--accent);
+  }
+  @keyframes menuIn { from { opacity:0; transform: translateY(-4px) } to { opacity:1; transform: none } }
+  .menu-in { animation: menuIn .12s ease-out both; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  window.TWEAKS = /*EDITMODE-BEGIN*/{
+    "page": "home",
+    "locale": "vi"
+  }/*EDITMODE-END*/;
+</script>
+
+<script type="text/babel" data-presets="react">
+
+const { useState, useEffect, useRef, useMemo } = React;
+const cn = (...xs) => xs.filter(Boolean).join(" ");
+
+/* ---------------- i18n ---------------- */
+const L = {
+  vi: {
+    brand: "my-agent",
+    brand_sub: "internal · v2.8.4",
+    nav_home: "Trang chủ",
+    nav_agents: "Projects",
+    cmd_hint: "Tìm agent, prompt, tài liệu…",
+    cmd_kbd: "⌘K",
+    new_agent: "Tạo agent",
+    notifs: "Thông báo",
+    me: "Tài khoản",
+    profile: "Hồ sơ của tôi",
+    settings: "Cài đặt",
+    signout: "Đăng xuất",
+    signing_out: "Đang đăng xuất…",
+    hello: "Chào",
+    hello_sub: "Đây là không gian làm việc nội bộ của bạn.",
+    your_agents: "Project của bạn",
+    see_all: "Xem tất cả",
+    recent_runs: "Phiên chạy gần đây",
+    shared: "Được chia sẻ với bạn",
+    empty_runs: "Chưa có phiên chạy nào trong 24h qua.",
+    running: "Đang chạy",
+    succeeded: "Thành công",
+    failed: "Thất bại",
+    ago_min: "phút trước",
+    ago_hr: "giờ trước",
+    by: "bởi",
+    stat_agents: "Agent đang hoạt động",
+    stat_runs: "Phiên chạy hôm nay",
+    stat_docs: "Tài liệu đã index",
+    stat_tokens: "Token sử dụng (24h)",
+    open: "Mở",
+    edit: "Sửa",
+    duplicate: "Nhân bản",
+    me_title: "Hồ sơ",
+    me_sub: "Quản lý thông tin cá nhân và quyền truy cập.",
+    personal: "Thông tin cá nhân",
+    workspace: "Không gian làm việc",
+    security: "Bảo mật",
+    sessions: "Thiết bị & phiên",
+    name: "Họ và tên",
+    email: "Email công ty",
+    role: "Vai trò",
+    team: "Phòng ban",
+    joined: "Tham gia",
+    manager: "Quản lý trực tiếp",
+    employee_id: "Mã nhân viên",
+    change_pwd: "Đổi mật khẩu",
+    mfa: "Xác thực 2 lớp (MFA)",
+    mfa_on: "Đang bật",
+    mfa_setup: "Thiết lập",
+    last_change: "Thay đổi gần nhất",
+    edit_btn: "Chỉnh sửa",
+    save: "Lưu thay đổi",
+    cancel: "Huỷ",
+    saved: "Đã lưu",
+    current_session: "Phiên hiện tại",
+    revoke: "Thu hồi",
+    revoke_all: "Thu hồi tất cả phiên khác",
+    lang: "Ngôn ngữ"
+  },
+  en: {
+    brand: "my-agent",
+    brand_sub: "internal · v2.8.4",
+    nav_home: "Home",
+    nav_agents: "Projects",
+    cmd_hint: "Search agents, prompts, docs…",
+    cmd_kbd: "⌘K",
+    new_agent: "New agent",
+    notifs: "Notifications",
+    me: "Account",
+    profile: "My profile",
+    settings: "Settings",
+    signout: "Sign out",
+    signing_out: "Signing out…",
+    hello: "Hi",
+    hello_sub: "This is your internal workspace.",
+    your_agents: "Your projects",
+    see_all: "See all",
+    recent_runs: "Recent runs",
+    shared: "Shared with you",
+    empty_runs: "No runs in the last 24h.",
+    running: "Running",
+    succeeded: "Succeeded",
+    failed: "Failed",
+    ago_min: "min ago",
+    ago_hr: "h ago",
+    by: "by",
+    stat_agents: "Active agents",
+    stat_runs: "Runs today",
+    stat_docs: "Indexed docs",
+    stat_tokens: "Tokens (24h)",
+    open: "Open",
+    edit: "Edit",
+    duplicate: "Duplicate",
+    me_title: "Profile",
+    me_sub: "Manage your personal info and access.",
+    personal: "Personal info",
+    workspace: "Workspace",
+    security: "Security",
+    sessions: "Devices & sessions",
+    name: "Full name",
+    email: "Work email",
+    role: "Role",
+    team: "Department",
+    joined: "Joined",
+    manager: "Direct manager",
+    employee_id: "Employee ID",
+    change_pwd: "Change password",
+    mfa: "Two-factor auth (MFA)",
+    mfa_on: "Enabled",
+    mfa_setup: "Set up",
+    last_change: "Last updated",
+    edit_btn: "Edit",
+    save: "Save changes",
+    cancel: "Cancel",
+    saved: "Saved",
+    current_session: "Current session",
+    revoke: "Revoke",
+    revoke_all: "Revoke all other sessions",
+    lang: "Language"
+  }
+};
+const useT = (loc) => (k) => (L[loc] && L[loc][k]) ?? L.vi[k] ?? k;
+
+/* ---------------- sample user / data ---------------- */
+const USER = {
+  name: "Nguyễn Vân Nhi",
+  email: "nhi.nguyen@company.vn",
+  role: "member",
+  team: "Engineering",
+  manager: "Trần Quốc Anh",
+  employeeId: "ENG-0241",
+  joined: "2024-02-15",
+  avatar: "NN"
+};
+
+const AGENTS = [
+{ name: "Release Notes Writer", desc: "Tổng hợp changelog từ Jira + GitHub", runs: 128, updated: "2h", owner: true, color: "a" },
+{ name: "SQL Copilot", desc: "Sinh & giải thích câu query cho warehouse", runs: 412, updated: "hôm nay", owner: true, color: "b" },
+{ name: "PR Reviewer", desc: "Review diff theo checklist của team", runs: 67, updated: "3d", owner: true, color: "c" },
+{ name: "Onboarding Buddy", desc: "Trả lời câu hỏi nhân viên mới", runs: 22, updated: "5d", owner: false, color: "d" }];
+
+
+const RUNS = [
+{ agent: "SQL Copilot", status: "succeeded", when: "4 phút trước", whenEn: "4 min ago", tokens: "1,240", by: "Bạn" },
+{ agent: "Release Notes Writer", status: "running", when: "12 phút trước", whenEn: "12 min ago", tokens: "—", by: "Bạn" },
+{ agent: "PR Reviewer", status: "failed", when: "38 phút trước", whenEn: "38 min ago", tokens: "820", by: "Bạn" },
+{ agent: "Onboarding Buddy", status: "succeeded", when: "2 giờ trước", whenEn: "2h ago", tokens: "3,104", by: "Mai H." }];
+
+
+const STATS = [
+{ k: "stat_agents", v: "12", d: "+2" },
+{ k: "stat_runs", v: "84", d: "+18%" },
+{ k: "stat_docs", v: "1,402", d: "+36" },
+{ k: "stat_tokens", v: "312K", d: "−4%" }];
+
+
+/* ---------------- icons ---------------- */
+const I = {
+  home: (p) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" {...p}><path d="M4 11l8-7 8 7v9a1 1 0 01-1 1h-5v-6H10v6H5a1 1 0 01-1-1v-9z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>,
+  bot: (p) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" {...p}><rect x="4" y="7" width="16" height="12" rx="3" stroke="currentColor" strokeWidth="1.6" /><path d="M12 3v4M8 12h.01M16 12h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>,
+  book: (p) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" {...p}><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2V5z" stroke="currentColor" strokeWidth="1.6" /><path d="M4 19a2 2 0 012-2h13" stroke="currentColor" strokeWidth="1.6" /></svg>,
+  play: (p) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" {...p}><path d="M6 4v16M10 4l10 8-10 8" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>,
+  bell: (p) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" {...p}><path d="M6 8a6 6 0 0112 0c0 7 3 8 3 8H3s3-1 3-8zM10 20a2 2 0 004 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>,
+  search: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" /><path d="M20 20l-4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>,
+  plus: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" /></svg>,
+  chev: (p) => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" {...p}><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+  dots: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" {...p}><circle cx="5" cy="12" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="19" cy="12" r="1.6" /></svg>,
+  spin: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="animate-spin" {...p}><circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity=".25" strokeWidth="2.5" /><path d="M21 12a9 9 0 00-9-9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" /></svg>,
+  check: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><path d="M4 12l6 6L20 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+  x: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>,
+  arrow: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+  globe: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" /><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" stroke="currentColor" strokeWidth="1.6" /></svg>,
+  mon: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="1.6" /><path d="M8 20h8M12 16v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>,
+  phone: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><rect x="7" y="2" width="10" height="20" rx="2" stroke="currentColor" strokeWidth="1.6" /><path d="M11 18h2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>,
+  shield: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6l8-3z" stroke="currentColor" strokeWidth="1.6" /><path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+  key: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><circle cx="8" cy="14" r="4" stroke="currentColor" strokeWidth="1.6" /><path d="M11 12l9-9M16 7l2 2M18 5l2 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>,
+  pencil: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><path d="M4 20h4L20 8l-4-4L4 16v4z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>,
+  logout: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><path d="M10 17l-5-5 5-5M5 12h12M15 4h4a1 1 0 011 1v14a1 1 0 01-1 1h-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+  gear: (p) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" {...p}><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" /><path d="M19 12a7 7 0 00-.2-1.6l2-1.5-2-3.4-2.3.9a7 7 0 00-2.8-1.6L13 2h-4l-.7 2.4a7 7 0 00-2.8 1.6l-2.3-.9-2 3.4 2 1.5A7 7 0 003 12c0 .6.1 1.1.2 1.6l-2 1.5 2 3.4 2.3-.9a7 7 0 002.8 1.6L9 22h4l.7-2.4a7 7 0 002.8-1.6l2.3.9 2-3.4-2-1.5c.1-.5.2-1 .2-1.6z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>
+};
+
+/* ---------------- Logo ---------------- */
+function Logo({ size = 26 }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <div className="relative" style={{ width: size, height: size }}>
+        <div className="absolute inset-0 rounded-md" style={{ background: "var(--fg)" }} />
+        <div className="absolute inset-[3px] rounded-[4px] grid place-items-center" style={{ background: "var(--bg)" }}>
+          <div className="w-[7px] h-[7px] rounded-full" style={{ background: "var(--accent)" }} />
+        </div>
+      </div>
+      <div className="leading-tight">
+        <div className="font-semibold tracking-tight text-[14px]">my-agent</div>
+        <div className="mono text-[10px] uppercase tracking-[0.12em]" style={{ color: "var(--fg-3)" }}>internal</div>
+      </div>
+    </div>);
+
+}
+
+/* ---------------- Header ---------------- */
+function Header({ page, setPage, locale, setLocale, t, onSignOut, signingOut }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const menuRef = useRef(null);
+  const notifRef = useRef(null);
+
+  useEffect(() => {
+    const onClick = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false);
+      if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
+
+  const nav = [
+  { key: "home", label: t("nav_home"), icon: <I.home /> },
+  { key: "agents", label: t("nav_agents"), icon: <I.bot /> }];
+
+
+  return (
+    <header className="sticky top-0 z-30 border-b backdrop-blur-md"
+    style={{ borderColor: "var(--line)", background: "color-mix(in oklch, var(--bg) 82%, transparent)" }}>
+      <div className="max-w-[1280px] mx-auto px-6 h-[58px] flex items-center gap-6">
+        <Logo />
+
+        <nav className="hidden md:flex items-center gap-1 ml-2">
+          {nav.map((n) =>
+          <button key={n.key}
+          onClick={() => n.key === "home" ? setPage("home") : null}
+          className={cn(
+            "flex items-center gap-2 px-3 h-9 rounded-md text-[13px] font-medium transition",
+            page === "home" && n.key === "home" ? "" : "hover:bg-[color:var(--bg-2)]"
+          )}
+          style={{
+            color: page === "home" && n.key === "home" ? "var(--fg)" : "var(--fg-2)",
+            background: page === "home" && n.key === "home" ? "var(--bg-2)" : "transparent"
+          }}>
+              <span style={{ color: page === "home" && n.key === "home" ? "var(--accent)" : "var(--fg-3)" }}>{n.icon}</span>
+              {n.label}
+            </button>
+          )}
+        </nav>
+
+        {/* search */}
+        <div className="flex-1 flex justify-center">
+          <button className="hidden sm:flex items-center gap-2 w-full max-w-[360px] h-9 rounded-md border px-3 text-[13px] transition hover:border-[color:var(--fg-3)]"
+          style={{ borderColor: "var(--line)", color: "var(--fg-3)", background: "var(--bg-2)" }}>
+            <I.search />
+            <span className="flex-1 text-left truncate">{t("cmd_hint")}</span>
+            <span className="mono text-[11px] px-1.5 py-0.5 rounded border"
+            style={{ borderColor: "var(--line)", background: "white", color: "var(--fg-2)" }}>{t("cmd_kbd")}</span>
+          </button>
+        </div>
+
+        {/* actions */}
+        <div className="flex items-center gap-2">
+          <LangPill locale={locale} setLocale={setLocale} />
+
+          {/* notifications */}
+          <div ref={notifRef} className="relative">
+            <button
+              onClick={() => {setNotifOpen((v) => !v);setMenuOpen(false);}}
+              aria-label={t("notifs")}
+              className="relative w-9 h-9 grid place-items-center rounded-md hover:bg-[color:var(--bg-2)] transition"
+              style={{ color: "var(--fg-2)" }}>
+              <I.bell />
+              <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full" style={{ background: "var(--accent)" }} />
+            </button>
+            {notifOpen &&
+            <div className="menu-in absolute right-0 top-11 w-[320px] rounded-xl border bg-white shadow-[0_10px_40px_-12px_rgba(0,0,0,0.18)] overflow-hidden"
+            style={{ borderColor: "var(--line)" }}>
+                <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: "var(--line-2)" }}>
+                  <span className="text-[13px] font-semibold">{t("notifs")}</span>
+                  <span className="mono text-[11px] px-1.5 py-0.5 rounded" style={{ background: "var(--accent-2)", color: "var(--accent)" }}>3 new</span>
+                </div>
+                <div className="max-h-[260px] overflow-auto">
+                  {[
+                ["SQL Copilot", locale === "vi" ? "Hoàn thành 3 phiên chạy" : "Finished 3 runs", "4m"],
+                ["PR Reviewer", locale === "vi" ? "Lỗi timeout ở job #8821" : "Timeout on job #8821", "38m"],
+                ["Onboarding Buddy", locale === "vi" ? "Mai H. đã chia sẻ agent" : "Mai H. shared an agent", "2h"]].
+                map(([a, msg, t2], i) =>
+                <div key={i} className="px-4 py-3 border-t flex gap-3" style={{ borderColor: "var(--line-2)" }}>
+                      <span className="mt-1 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: i === 1 ? "var(--danger)" : "var(--accent)" }} />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[13px] font-medium truncate">{a}</div>
+                        <div className="text-[12px]" style={{ color: "var(--fg-2)" }}>{msg}</div>
+                      </div>
+                      <div className="mono text-[11px]" style={{ color: "var(--fg-3)" }}>{t2}</div>
+                    </div>
+                )}
+                </div>
+              </div>
+            }
+          </div>
+
+          {/* user menu */}
+          <div ref={menuRef} className="relative">
+            <button onClick={() => {setMenuOpen((v) => !v);setNotifOpen(false);}}
+            className="flex items-center gap-2 h-9 pl-1 pr-2 rounded-md hover:bg-[color:var(--bg-2)] transition">
+              <span className="w-7 h-7 rounded-full grid place-items-center mono text-[12px] font-semibold"
+              style={{ background: "var(--fg)", color: "var(--bg)" }}>{USER.avatar}</span>
+              <span className="hidden lg:inline text-[13px] font-medium max-w-[120px] truncate">{USER.name}</span>
+              <span style={{ color: "var(--fg-3)" }}><I.chev /></span>
+            </button>
+            {menuOpen &&
+            <div className="menu-in absolute right-0 top-11 w-[256px] rounded-xl border bg-white shadow-[0_10px_40px_-12px_rgba(0,0,0,0.18)] overflow-hidden"
+            style={{ borderColor: "var(--line)" }}>
+                <div className="px-4 py-3 border-b" style={{ borderColor: "var(--line-2)" }}>
+                  <div className="text-[13px] font-semibold truncate">{USER.name}</div>
+                  <div className="text-[12px] truncate mono" style={{ color: "var(--fg-3)" }}>{USER.email}</div>
+                </div>
+                <div className="py-1">
+                  <MenuItem onClick={() => {setPage("me");setMenuOpen(false);}} icon={<I.bot />} label={t("profile")} />
+                  <MenuItem icon={<I.gear />} label={t("settings")} />
+                </div>
+                <div className="border-t py-1" style={{ borderColor: "var(--line-2)" }}>
+                  <MenuItem onClick={onSignOut} icon={signingOut ? <I.spin /> : <I.logout />}
+                label={signingOut ? t("signing_out") : t("signout")} danger />
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </header>);
+
+}
+
+function MenuItem({ icon, label, onClick, danger }) {
+  return (
+    <button onClick={onClick}
+    className="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] hover:bg-[color:var(--bg-2)] transition"
+    style={{ color: danger ? "var(--danger)" : "var(--fg)" }}>
+      <span style={{ color: danger ? "var(--danger)" : "var(--fg-3)" }}>{icon}</span>
+      {label}
+    </button>);
+
+}
+
+function LangPill({ locale, setLocale }) {
+  return (
+    <div className="inline-flex items-center p-0.5 rounded-full border bg-white" style={{ borderColor: "var(--line)" }}>
+      <span className="ml-2 mr-1" style={{ color: "var(--fg-3)" }}><I.globe /></span>
+      {[["vi", "VI"], ["en", "EN"]].map(([k, l]) =>
+      <button key={k} onClick={() => setLocale(k)}
+      className={cn("mono text-[11px] font-semibold px-2 py-0.5 rounded-full transition",
+      locale === k ? "" : "opacity-60 hover:opacity-100")}
+      style={{
+        background: locale === k ? "var(--fg)" : "transparent",
+        color: locale === k ? "var(--bg)" : "var(--fg-2)"
+      }}>
+          {l}
+        </button>
+      )}
+    </div>);
+
+}
+
+/* ============================================================
+   HOME
+   ============================================================ */
+function HomePage({ t, locale, setPage }) {
+  const greeting = locale === "vi" ? "Chào buổi sáng" : "Good morning";
+  return (
+    <main className="max-w-[1280px] mx-auto px-6 py-10">
+      <section>
+        <div className="mono text-[11px] uppercase tracking-[0.18em]" style={{ color: "var(--fg-3)" }}>
+          <span style={{ color: "var(--accent)" }}>●</span>&nbsp; workspace · engineering
+        </div>
+        <h1 className="mt-2 text-[32px] font-semibold tracking-tight">
+          {greeting}, {USER.name.split(" ").slice(-1)[0]}.
+        </h1>
+        <p className="mt-1 text-[15px]" style={{ color: "var(--fg-2)" }}>{t("hello_sub")}</p>
+      </section>
+
+      {/* stats */}
+      <section className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3">
+        {STATS.map((s, i) =>
+        <div key={i} className="rounded-xl border bg-white p-5" style={{ borderColor: "var(--line)" }}>
+            <div className="mono text-[10.5px] uppercase tracking-[0.16em]" style={{ color: "var(--fg-3)" }}>{t(s.k)}</div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-[26px] font-semibold tracking-tight">{s.v}</span>
+              <span className={cn("mono text-[11px]", s.d.startsWith("−") ? "" : "")}
+            style={{ color: s.d.startsWith("−") ? "var(--danger)" : "var(--accent)" }}>{s.d}</span>
+            </div>
+            <Sparkline seed={i} />
+          </div>
+        )}
+      </section>
+
+      {/* two-col */}
+      <section className="mt-8 grid lg:grid-cols-[1.4fr_1fr] gap-6">
+        {/* agents */}
+        <div className="rounded-xl border bg-white" style={{ borderColor: "var(--line)" }}>
+          <div className="px-5 py-4 border-b flex items-center justify-between" style={{ borderColor: "var(--line-2)" }}>
+            <h2 className="text-[15px] font-semibold">{t("your_agents")}</h2>
+            <button className="text-[12px] mono flex items-center gap-1 hover:text-[color:var(--fg)]" style={{ color: "var(--fg-3)" }}>
+              {t("see_all")} <I.arrow />
+            </button>
+          </div>
+          <ul className="divide-y" style={{ borderColor: "var(--line-2)" }}>
+            {AGENTS.map((a, i) =>
+            <li key={i} className="group px-5 py-3.5 flex items-center gap-4 hover:bg-[color:var(--bg-2)] transition">
+                <AgentBadge color={a.color} name={a.name} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14px] font-medium truncate">{a.name}</span>
+                    {!a.owner &&
+                  <span className="mono text-[10px] px-1.5 py-0.5 rounded" style={{ background: "var(--bg-2)", color: "var(--fg-3)" }}>
+                        {t("shared")}
+                      </span>
+                  }
+                  </div>
+                  <div className="text-[13px] truncate" style={{ color: "var(--fg-2)" }}>{a.desc}</div>
+                </div>
+                <div className="hidden md:flex items-center gap-5 mono text-[12px]" style={{ color: "var(--fg-3)" }}>
+                  <span><span style={{ color: "var(--fg-2)" }}>{a.runs}</span> runs</span>
+                  <span>{a.updated}</span>
+                </div>
+                <button className="opacity-0 group-hover:opacity-100 transition flex items-center gap-1.5 h-8 px-2.5 rounded-md border text-[12px] font-medium"
+              style={{ borderColor: "var(--line)", background: "white" }}>
+                  <I.arrow /> {t("open")}
+                </button>
+              </li>
+            )}
+          </ul>
+        </div>
+
+        {/* recent runs */}
+        <div className="rounded-xl border bg-white" style={{ borderColor: "var(--line)" }}>
+          <div className="px-5 py-4 border-b flex items-center justify-between" style={{ borderColor: "var(--line-2)" }}>
+            <h2 className="text-[15px] font-semibold">{t("recent_runs")}</h2>
+            <span className="mono text-[11px]" style={{ color: "var(--fg-3)" }}>24h</span>
+          </div>
+          <ul className="divide-y" style={{ borderColor: "var(--line-2)" }}>
+            {RUNS.map((r, i) =>
+            <li key={i} className="px-5 py-3 flex items-center gap-3">
+                <StatusDot s={r.status} />
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13.5px] font-medium truncate">{r.agent}</div>
+                  <div className="mono text-[11.5px] truncate" style={{ color: "var(--fg-3)" }}>
+                    {t("by")} {r.by} · {locale === "vi" ? r.when : r.whenEn}
+                  </div>
+                </div>
+                <div className="mono text-[11.5px]" style={{ color: "var(--fg-3)" }}>{r.tokens}</div>
+              </li>
+            )}
+          </ul>
+        </div>
+      </section>
+    </main>);
+
+}
+
+function AgentBadge({ color, name }) {
+  const map = {
+    a: ["oklch(0.95 0.04 150)", "oklch(0.45 0.12 150)"],
+    b: ["oklch(0.94 0.03 260)", "oklch(0.42 0.12 260)"],
+    c: ["oklch(0.95 0.05 75)", "oklch(0.45 0.14 75)"],
+    d: ["oklch(0.94 0.04 320)", "oklch(0.44 0.13 320)"]
+  };
+  const [bg, fg] = map[color] || map.a;
+  return (
+    <div className="w-10 h-10 rounded-lg grid place-items-center mono text-[14px] font-semibold shrink-0"
+    style={{ background: bg, color: fg }}>
+      {name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
+    </div>);
+
+}
+
+function StatusDot({ s }) {
+  if (s === "running") return (
+    <span className="w-5 h-5 grid place-items-center rounded-full shrink-0" style={{ background: "var(--accent-2)", color: "var(--accent)" }}>
+      <I.spin />
+    </span>);
+
+  if (s === "failed") return (
+    <span className="w-5 h-5 grid place-items-center rounded-full shrink-0"
+    style={{ background: "color-mix(in oklch, var(--danger) 15%, white)", color: "var(--danger)" }}>
+      <I.x />
+    </span>);
+
+  return (
+    <span className="w-5 h-5 grid place-items-center rounded-full shrink-0" style={{ background: "var(--accent-2)", color: "var(--accent)" }}>
+      <I.check />
+    </span>);
+
+}
+
+function Sparkline({ seed = 0 }) {
+  // deterministic pseudo-random
+  const pts = useMemo(() => {
+    const out = [];
+    let x = 12 + seed * 7.7;
+    for (let i = 0; i < 20; i++) {x = (x * 9301 + 49297) % 233280;out.push(x / 233280);}
+    return out;
+  }, [seed]);
+  const W = 160,H = 34,max = Math.max(...pts),min = Math.min(...pts);
+  const d = pts.map((v, i) => {
+    const px = i / (pts.length - 1) * W;
+    const py = H - (v - min) / (max - min || 1) * (H - 4) - 2;
+    return `${i === 0 ? "M" : "L"}${px.toFixed(1)},${py.toFixed(1)}`;
+  }).join(" ");
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="mt-3 w-full h-[34px]">
+      <path d={d} stroke="var(--accent)" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>);
+
+}
+
+/* ============================================================
+   ME (Profile)
+   ============================================================ */
+function MePage({ t, locale }) {
+  const [tab, setTab] = useState("personal");
+  const [editing, setEditing] = useState(false);
+  const [savedFlash, setSavedFlash] = useState(false);
+  const [form, setForm] = useState({ name: USER.name, team: USER.team, manager: USER.manager });
+  const save = () => {
+    setEditing(false);
+    setSavedFlash(true);
+    setTimeout(() => setSavedFlash(false), 1800);
+  };
+  const tabs = [
+  { k: "personal", label: t("personal"), icon: <I.pencil /> }];
+
+
+  return (
+    <main className="max-w-[1080px] mx-auto px-6 py-10">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div>
+          <div className="mono text-[11px] uppercase tracking-[0.18em]" style={{ color: "var(--fg-3)" }}>
+            <span style={{ color: "var(--accent)" }}>●</span>&nbsp; account / profile
+          </div>
+          <h1 className="mt-2 text-[28px] font-semibold tracking-tight">{t("me_title")}</h1>
+          <p className="mt-1 text-[14.5px]" style={{ color: "var(--fg-2)" }}>{t("me_sub")}</p>
+        </div>
+        {savedFlash &&
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-md mono text-[12px]"
+        style={{ background: "var(--accent-2)", color: "var(--accent)" }}>
+            <I.check /> {t("saved")}
+          </div>
+        }
+      </div>
+
+      {/* identity strip */}
+      <section className="mt-7 rounded-xl border bg-white overflow-hidden" style={{ borderColor: "var(--line)" }}>
+        <div className="h-[88px] relative" style={{ background: "var(--fg)", backgroundColor: "rgba(0, 0, 0, 0.008)" }}>
+          <div className="absolute inset-0 opacity-[0.08]"
+          style={{ backgroundImage: "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)", backgroundSize: "32px 32px", width: "0px", height: "0px" }} />
+          <div className="absolute -right-20 -top-20 w-60 h-60 rounded-full blur-3xl opacity-30" style={{ background: "var(--accent)" }} />
+        </div>
+        <div className="px-6 pb-5 -mt-10 flex flex-col sm:flex-row sm:items-end gap-4">
+          <div className="w-20 h-20 rounded-2xl grid place-items-center mono text-[22px] font-bold border-4"
+          style={{ background: "var(--bg)", color: "var(--fg)", borderColor: "var(--bg)" }}>
+            {USER.avatar}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[20px] font-semibold tracking-tight">{USER.name}</span>
+              <span className="mono text-[11px] px-1.5 py-0.5 rounded" style={{ background: "var(--accent-2)", color: "var(--accent)" }}>
+                {USER.role}
+              </span>
+            </div>
+            <div className="mono text-[12.5px] mt-0.5" style={{ color: "var(--fg-3)" }}>
+              {USER.email} · {USER.team} · {USER.employeeId}
+            </div>
+          </div>
+          {!editing && tab === "personal" &&
+          <button onClick={() => setEditing(true)}
+          className="inline-flex items-center gap-2 h-9 px-3.5 rounded-md border text-[13px] font-medium hover:bg-[color:var(--bg-2)] transition"
+          style={{ borderColor: "var(--line)" }}>
+              <I.pencil /> {t("edit_btn")}
+            </button>
+          }
+        </div>
+      </section>
+
+      {/* tabs */}
+      <div className="mt-6 flex items-center gap-1 border-b" style={{ borderColor: "var(--line)", display: tabs.length > 1 ? "flex" : "none" }}>
+        {tabs.map((tb) =>
+        <button key={tb.k} onClick={() => {setTab(tb.k);setEditing(false);}}
+        className={cn(
+          "flex items-center gap-2 px-4 h-10 text-[13.5px] font-medium border-b-2 -mb-px transition",
+          tab === tb.k ? "" : "hover:text-[color:var(--fg)]"
+        )}
+        style={{
+          borderColor: tab === tb.k ? "var(--fg)" : "transparent",
+          color: tab === tb.k ? "var(--fg)" : "var(--fg-2)"
+        }}>
+            <span style={{ color: tab === tb.k ? "var(--accent)" : "var(--fg-3)" }}>{tb.icon}</span>
+            {tb.label}
+          </button>
+        )}
+      </div>
+
+      {/* tab content */}
+      <div className="mt-6">
+        {tab === "personal" &&
+        <Card>
+            <CardHead title={t("personal")} sub={locale === "vi" ? "Thông tin này hiển thị cho đồng nghiệp trong workspace." : "Visible to teammates in the workspace."} />
+            <div className="grid sm:grid-cols-2 gap-x-8 gap-y-5 p-6">
+              <Row label={t("name")} editing={editing}
+            value={form.name} onChange={(v) => setForm((f) => ({ ...f, name: v }))} />
+              <Row label={t("email")} value={USER.email} readOnly badge={locale === "vi" ? "không thể đổi" : "locked"} />
+              <Row label={t("employee_id")} value={USER.employeeId} readOnly mono />
+              <Row label={t("team")} editing={editing}
+            value={form.team} onChange={(v) => setForm((f) => ({ ...f, team: v }))}
+            select={["Engineering", "Product", "Design", "Data", "Operations"]} />
+              <Row label={t("manager")} editing={editing}
+            value={form.manager} onChange={(v) => setForm((f) => ({ ...f, manager: v }))} />
+              <Row label={t("joined")} value={locale === "vi" ? "15/02/2024" : "Feb 15, 2024"} readOnly mono />
+            </div>
+            {editing &&
+          <div className="flex items-center justify-end gap-2 px-6 py-4 border-t" style={{ borderColor: "var(--line-2)", background: "var(--bg-2)" }}>
+                <button onClick={() => {setEditing(false);setForm({ name: USER.name, team: USER.team, manager: USER.manager });}}
+            className="h-9 px-3.5 rounded-md text-[13px] font-medium hover:bg-white transition"
+            style={{ color: "var(--fg-2)" }}>
+                  {t("cancel")}
+                </button>
+                <button onClick={save}
+            className="h-9 px-3.5 rounded-md text-[13px] font-semibold transition hover:brightness-110"
+            style={{ background: "var(--fg)", color: "var(--bg)" }}>
+                  {t("save")}
+                </button>
+              </div>
+          }
+          </Card>
+        }
+
+        {tab === "security" && false &&
+        <div className="space-y-4">
+            <Card>
+              <CardHead title={t("change_pwd")}
+            sub={<span>{t("last_change")}: <span className="mono">{locale === "vi" ? "12/03/2026" : "Mar 12, 2026"}</span></span>} />
+              <div className="p-6 grid sm:grid-cols-[1fr_auto] gap-4 items-center">
+                <div className="flex items-center gap-3 text-[13.5px]" style={{ color: "var(--fg-2)" }}>
+                  <span className="w-8 h-8 rounded-md grid place-items-center" style={{ background: "var(--bg-2)", color: "var(--fg-2)" }}><I.key /></span>
+                  {locale === "vi" ? "Mật khẩu của bạn đã đặt 38 ngày trước." : "Your password was set 38 days ago."}
+                </div>
+                <button className="h-9 px-3.5 rounded-md border text-[13px] font-medium hover:bg-[color:var(--bg-2)] transition justify-self-start sm:justify-self-end"
+              style={{ borderColor: "var(--line)" }}>{t("change_pwd")}</button>
+              </div>
+            </Card>
+
+            <Card>
+              <CardHead title={t("mfa")} sub={locale === "vi" ? "Yêu cầu bởi chính sách bảo mật công ty." : "Required by company security policy."} />
+              <div className="p-6 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-md grid place-items-center" style={{ background: "var(--accent-2)", color: "var(--accent)" }}><I.shield /></span>
+                  <div>
+                    <div className="text-[13.5px] font-medium">Authenticator app</div>
+                    <div className="mono text-[12px]" style={{ color: "var(--fg-3)" }}>•••• 2419 · {locale === "vi" ? "iPhone 15" : "iPhone 15"}</div>
+                  </div>
+                </div>
+                <span className="mono text-[11px] px-2 py-0.5 rounded flex items-center gap-1"
+              style={{ background: "var(--accent-2)", color: "var(--accent)" }}>
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--accent)" }} />{t("mfa_on")}
+                </span>
+              </div>
+            </Card>
+          </div>
+        }
+
+        {tab === "sessions" && false &&
+        <Card>
+            <CardHead title={t("sessions")}
+          sub={locale === "vi" ? "Các thiết bị đã đăng nhập vào tài khoản này." : "Devices signed in to this account."} />
+            <ul className="divide-y" style={{ borderColor: "var(--line-2)" }}>
+              {[
+            { d: "MacBook Pro 14", b: "Chrome · macOS", ip: "171.240.12.44", loc: "Hà Nội, VN", when: locale === "vi" ? "Ngay bây giờ" : "Just now", cur: true, icon: <I.mon /> },
+            { d: "iPhone 15", b: "Safari · iOS 17", ip: "171.240.12.44", loc: "Hà Nội, VN", when: locale === "vi" ? "2 giờ trước" : "2h ago", icon: <I.phone /> },
+            { d: "Windows PC", b: "Edge · Windows 11", ip: "203.113.8.21", loc: "HCM, VN", when: locale === "vi" ? "4 ngày trước" : "4d ago", icon: <I.mon /> }].
+            map((s, i) =>
+            <li key={i} className="px-6 py-4 flex items-center gap-4">
+                  <span className="w-9 h-9 rounded-md grid place-items-center"
+              style={{ background: "var(--bg-2)", color: "var(--fg-2)" }}>{s.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[14px] font-medium truncate">{s.d}</span>
+                      {s.cur && <span className="mono text-[10.5px] px-1.5 py-0.5 rounded" style={{ background: "var(--accent-2)", color: "var(--accent)" }}>{t("current_session")}</span>}
+                    </div>
+                    <div className="mono text-[12px] truncate" style={{ color: "var(--fg-3)" }}>
+                      {s.b} · {s.ip} · {s.loc}
+                    </div>
+                  </div>
+                  <div className="mono text-[12px]" style={{ color: "var(--fg-3)" }}>{s.when}</div>
+                  {!s.cur &&
+              <button className="h-8 px-2.5 rounded-md text-[12px] font-medium border hover:bg-[color:var(--bg-2)] transition"
+              style={{ borderColor: "var(--line)", color: "var(--fg-2)" }}>
+                      {t("revoke")}
+                    </button>
+              }
+                </li>
+            )}
+            </ul>
+            <div className="px-6 py-3 border-t flex justify-end" style={{ borderColor: "var(--line-2)", background: "var(--bg-2)" }}>
+              <button className="h-9 px-3.5 rounded-md text-[13px] font-medium border transition hover:bg-white"
+            style={{ borderColor: "color-mix(in oklch, var(--danger) 30%, var(--line))", color: "var(--danger)" }}>
+                {t("revoke_all")}
+              </button>
+            </div>
+          </Card>
+        }
+      </div>
+    </main>);
+
+}
+
+function Card({ children }) {
+  return (
+    <section className="rounded-xl border bg-white overflow-hidden" style={{ borderColor: "var(--line)" }}>{children}</section>);
+
+}
+function CardHead({ title, sub }) {
+  return (
+    <header className="px-6 py-4 border-b" style={{ borderColor: "var(--line-2)" }}>
+      <h3 className="text-[14.5px] font-semibold">{title}</h3>
+      {sub && <p className="mt-0.5 text-[12.5px]" style={{ color: "var(--fg-3)" }}>{sub}</p>}
+    </header>);
+
+}
+function Row({ label, value, onChange, editing, readOnly, mono, select, badge }) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-[12px] uppercase tracking-[0.08em]" style={{ color: "var(--fg-3)" }}>{label}</span>
+        {badge && <span className="mono text-[10.5px] px-1.5 py-0.5 rounded" style={{ background: "var(--bg-2)", color: "var(--fg-3)" }}>{badge}</span>}
+      </div>
+      {editing && !readOnly ?
+      select ?
+      <select value={value} onChange={(e) => onChange(e.target.value)}
+      className="w-full h-9 px-3 rounded-md border bg-white text-[14px] focus-ring transition"
+      style={{ borderColor: "var(--line)" }}>
+            {select.map((o) => <option key={o}>{o}</option>)}
+          </select> :
+
+      <input value={value} onChange={(e) => onChange(e.target.value)}
+      className="w-full h-9 px-3 rounded-md border bg-white text-[14px] focus-ring transition"
+      style={{ borderColor: "var(--line)" }} /> :
+
+
+      <div className={cn("text-[14px]", mono && "mono")}>{value}</div>
+      }
+    </div>);
+
+}
+
+/* ============================================================
+   Tweaks
+   ============================================================ */
+function TweaksPanel({ page, setPage, locale, setLocale, onClose }) {
+  return (
+    <div className="fixed bottom-4 right-4 w-[260px] rounded-xl border shadow-2xl z-50 overflow-hidden"
+    style={{ borderColor: "var(--line)", background: "white" }}>
+      <div className="flex items-center justify-between px-3.5 py-2.5 border-b" style={{ borderColor: "var(--line-2)" }}>
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full" style={{ background: "var(--accent)" }} />
+          <span className="text-[13px] font-semibold">Tweaks</span>
+        </div>
+        <button onClick={onClose} className="text-[color:var(--fg-3)] hover:text-[color:var(--fg)]">✕</button>
+      </div>
+      <div className="p-3.5 space-y-4">
+        <div>
+          <div className="mono text-[10px] uppercase tracking-[0.16em] mb-2" style={{ color: "var(--fg-3)" }}>page</div>
+          <div className="grid grid-cols-2 gap-1.5">
+            {[["home", "Home"], ["me", "Profile"]].map(([k, l]) =>
+            <button key={k} onClick={() => setPage(k)}
+            className={cn("py-1.5 rounded text-[12px] font-medium border transition",
+            page === k ? "bg-[color:var(--fg)] text-white border-[color:var(--fg)]" : "hover:bg-[color:var(--bg-2)]")}
+            style={{ borderColor: page === k ? "var(--fg)" : "var(--line)" }}>
+                {l}
+              </button>
+            )}
+          </div>
+        </div>
+        <div>
+          <div className="mono text-[10px] uppercase tracking-[0.16em] mb-2" style={{ color: "var(--fg-3)" }}>language</div>
+          <div className="grid grid-cols-2 gap-1.5">
+            {[["vi", "Tiếng Việt"], ["en", "English"]].map(([k, l]) =>
+            <button key={k} onClick={() => setLocale(k)}
+            className={cn("py-1.5 rounded text-[12px] font-medium border transition",
+            locale === k ? "bg-[color:var(--fg)] text-white border-[color:var(--fg)]" : "hover:bg-[color:var(--bg-2)]")}
+            style={{ borderColor: locale === k ? "var(--fg)" : "var(--line)" }}>
+                {l}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>);
+
+}
+
+/* ============================================================
+   App
+   ============================================================ */
+function App() {
+  const [page, setPage] = useState(window.TWEAKS?.page || "home");
+  const [locale, setLocale] = useState(window.TWEAKS?.locale || "vi");
+  const [signingOut, setSigningOut] = useState(false);
+  const [tweaksOpen, setTweaksOpen] = useState(false);
+  const t = useT(locale);
+
+  useEffect(() => {
+    const onMsg = (e) => {
+      const d = e.data || {};
+      if (d.type === "__activate_edit_mode") setTweaksOpen(true);
+      if (d.type === "__deactivate_edit_mode") setTweaksOpen(false);
+    };
+    window.addEventListener("message", onMsg);
+    window.parent?.postMessage({ type: "__edit_mode_available" }, "*");
+    return () => window.removeEventListener("message", onMsg);
+  }, []);
+
+  const persist = (k, v) => window.parent?.postMessage({ type: "__edit_mode_set_keys", edits: { [k]: v } }, "*");
+  const setPageP = (p) => {setPage(p);persist("page", p);};
+  const setLocaleP = (l) => {setLocale(l);persist("locale", l);};
+
+  const onSignOut = () => {
+    setSigningOut(true);
+    setTimeout(() => {setSigningOut(false);alert(locale === "vi" ? "Đã đăng xuất (demo)" : "Signed out (demo)");}, 900);
+  };
+
+  return (
+    <div data-screen-label={page}>
+      <Header page={page} setPage={setPageP} locale={locale} setLocale={setLocaleP} t={t}
+      onSignOut={onSignOut} signingOut={signingOut} />
+      {page === "home" ? <HomePage t={t} locale={locale} setPage={setPageP} /> : <MePage t={t} locale={locale} />}
+      {tweaksOpen && <TweaksPanel page={page} setPage={setPageP} locale={locale} setLocale={setLocaleP} onClose={() => setTweaksOpen(false)} />}
+    </div>);
+
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

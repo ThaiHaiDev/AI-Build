@@ -95,6 +95,10 @@ Ai được thay đổi `allowedEnvs`:
 - Mask password mặc định, nút "Reveal" mới decrypt
 - Audit log: ai reveal account nào khi nào
 
+### Lịch sử thay đổi account test
+
+Mỗi thao tác **tạo / sửa / xóa** account test được ghi vào module History (Module 4). Người dùng có thể xem ai đã đổi password, thêm account, hoặc xóa account trong dự án — phục vụ truy vết khi có sự cố.
+
 ---
 
 ## Module 3 — User Management
@@ -126,3 +130,48 @@ Hai đường tạo user:
 ### Recommendation
 
 - **Invite flow thay vì Super Admin tự tạo password**: khi Super Admin tạo user mới, hệ thống gửi link set-password qua email, user click link và tự đặt password. An toàn hơn và đỡ việc cho Super Admin. Ghi nhận làm open question.
+
+---
+
+## Module 4 — History (Lịch sử thay đổi)
+
+### Mô tả
+
+Một bảng lịch sử tập trung (`History`) ghi lại mọi thao tác tạo / sửa / xóa trên các resource quan trọng. Được filter theo `resourceType` để xem lịch sử của từng loại đối tượng riêng.
+
+### Các loại lịch sử (`resourceType`)
+
+| Type | Mô tả |
+|------|-------|
+| `test_account` | Tạo / sửa / xóa account test |
+| `project` | Tạo / sửa thông tin / archive / unarchive dự án |
+| `member` | Thêm / gỡ member, thay đổi `allowedEnvs` |
+| `user` | SA tạo user, đổi role, deactivate |
+
+### Thông tin một entry lịch sử
+
+- **Actor**: ai thực hiện (tên + email)
+- **Action**: loại thao tác (`created`, `updated`, `deleted`, `archived`, v.v.)
+- **Resource type + ID + tên snapshot**: đối tượng bị tác động (tên tại thời điểm thao tác)
+- **Project** (nếu có): dự án liên quan
+- **Meta / Diff**: dữ liệu trước và sau khi thay đổi (không lưu password/token)
+- **Thời gian**: timestamp
+
+### Phân quyền xem lịch sử
+
+| Ai | Xem được gì |
+|----|-------------|
+| Super Admin | Toàn bộ history mọi loại, mọi dự án |
+| Admin (member dự án) | History của dự án mình (test_account + member), không thấy user history |
+| User (member dự án) | **Không** xem được history |
+
+### Điểm truy cập trên UI
+
+- **Tab "Lịch sử"** trong `ProjectDetailPage`: lịch sử của `test_account` + `member` thuộc dự án đó
+- **Trang `/admin/history`** (SA only): toàn bộ history, filter theo type / actor / dự án / date range
+
+### Nguyên tắc vận hành
+
+- **Append-only**: không có endpoint xóa history
+- **Fire-and-forget**: ghi log không chặn response chính — nếu ghi thất bại chỉ log lỗi nội bộ
+- **Không lưu sensitive data**: password, token, PII ngoài tên + email actor

@@ -126,6 +126,32 @@ Mô tả luồng nghiệp vụ dưới dạng narrative. Không bao gồm chi ti
 
 ---
 
+## Flow J — Admin tra cứu lịch sử account test trong dự án
+
+**Actor**: Admin (Dev Lead của dự án)
+
+1. QC báo "account test staging bị đổi password không biết từ lúc nào".
+2. Admin login → vào `Project Alpha` → mở tab **"Lịch sử"**.
+3. Thấy timeline: "Nguyễn Văn A đã **sửa** account test *Staging Admin* — 3 giờ trước".
+4. Admin biết ai đổi, liên hệ xác nhận.
+
+**Outcome**: Truy vết thay đổi trong < 1 phút, không cần hỏi từng người.
+
+---
+
+## Flow K — Super Admin tra cứu lịch sử toàn hệ thống
+
+**Actor**: Super Admin
+
+1. SA nhận báo cáo có account production bị xóa nhầm.
+2. SA vào `/admin/history` → filter `resourceType = test_account`, filter `action = deleted`.
+3. Thấy: "Trần Văn B đã xóa account *Production Admin* của Project Beta — hôm qua 17:42".
+4. SA phục hồi thông tin (thủ công) và nhắc nhở.
+
+**Outcome**: Audit trail đầy đủ cho mọi thao tác quan trọng, không cần đoán.
+
+---
+
 ## Flow G — Super Admin deactivate user
 
 **Actor**: Super Admin

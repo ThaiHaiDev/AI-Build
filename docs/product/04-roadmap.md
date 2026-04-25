@@ -86,21 +86,26 @@ Chia theo sprint, mỗi sprint có 1 business outcome rõ ràng. Chi tiết task
 
 ---
 
-## Sprint 05 — Polish & Onboarding UX
+## Sprint 05 — History Module + Polish & Onboarding UX
 
-**Outcome**: Hệ thống sẵn sàng cho nhân viên mới tự onboard, có search/filter tốt, có audit log cơ bản.
+**Outcome**: Hệ thống có module lịch sử tập trung để truy vết mọi thay đổi; sẵn sàng cho nhân viên mới tự onboard; search/filter hoàn chỉnh; UX đồng bộ.
 
 **Scope nghiệp vụ**:
 
+- **History Module** (Module 4): 1 bảng `History` tập trung, filter theo `resourceType` (`test_account`, `project`, `member`, `user`)
+  - Tab "Lịch sử" trong ProjectDetail: Admin+ xem lịch sử account test + member của dự án
+  - Trang `/admin/history` (SA only): toàn bộ history, filter đa chiều
 - Search dự án (theo tên, tech stack, đối tác)
 - Search user (theo email, tên, role)
-- Dashboard empty state cho user chưa được gán dự án nào (hướng dẫn liên hệ ai)
-- Audit log cơ bản: ai tạo/sửa/xóa dự án, ai gán/gỡ member, ai sửa account test (chưa cần audit view account)
-- UX pass: empty state, loading state, error state ở mọi màn hình chính
+- Dashboard / Projects empty state theo role (hướng dẫn liên hệ ai)
+- UX pass: skeleton loader, error boundary, error state ở mọi màn hình chính
+- Navigation SA: link đến `/admin/users` và `/admin/history`
 
 **Demo criteria**:
+- Admin sửa password account test → vào tab "Lịch sử" → thấy entry "Ai đó đã sửa account *X* lúc *Y*".
+- SA vào `/admin/history` → filter type = test_account + action = deleted → thấy ai xóa account nào.
 - Nhân viên mới hoàn toàn tự onboard sau khi được tạo account và assign dự án.
-- Super Admin xem audit log biết ai vừa sửa cái gì trong 7 ngày qua.
+- Search "alpha" ở trang Projects → chỉ thấy Project Alpha.
 
 ---
 

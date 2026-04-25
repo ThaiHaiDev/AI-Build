@@ -23,6 +23,7 @@
   - Xem và cập nhật account test của các dự án mình phụ trách (khi QC báo đổi password, khi thêm account mới)
   - Xem danh sách member trong dự án
   - Gán / điều chỉnh env access (`allowedEnvs`) cho từng member trong dự án mình phụ trách
+  - Xem lịch sử thay đổi trong dự án (ai sửa/xóa account test, ai thêm/gỡ member)
 
 ### 3. User — Nhân viên / Developer / QC
 

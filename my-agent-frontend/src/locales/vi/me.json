@@ -1,0 +1,18 @@
+{
+  "title":        "Hồ sơ",
+  "sub":          "Quản lý thông tin cá nhân và quyền truy cập.",
+  "meta":         "account / profile",
+  "personal":     "Thông tin cá nhân",
+  "personal_sub": "Thông tin này hiển thị cho đồng nghiệp trong workspace.",
+  "name":         "Họ và tên",
+  "email":        "Email công ty",
+  "email_locked": "không thể đổi",
+  "employee_id":  "Mã nhân viên",
+  "team":         "Phòng ban",
+  "manager":      "Quản lý trực tiếp",
+  "joined":       "Tham gia",
+  "edit_btn":     "Chỉnh sửa",
+  "save":         "Lưu thay đổi",
+  "cancel":       "Huỷ",
+  "saved":        "Đã lưu"
+}

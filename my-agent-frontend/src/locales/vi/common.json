@@ -1,18 +1,32 @@
 {
   "app_name": "MyAgent",
-  "loading": "Đang tải...",
-  "save": "Lưu",
-  "cancel": "Huỷ",
-  "back": "Quay lại",
+  "loading":  "Đang tải...",
+  "save":     "Lưu",
+  "cancel":   "Huỷ",
+  "back":     "Quay lại",
   "nav": {
-    "login": "Đăng nhập",
+    "login":    "Đăng nhập",
     "register": "Đăng ký",
-    "logout": "Đăng xuất",
-    "me": "Tài khoản",
+    "logout":   "Đăng xuất",
+    "me":       "Tài khoản",
     "projects": "Dự án"
   },
   "home": {
-    "title": "Chào mừng",
+    "title":    "Chào mừng",
     "subtitle": "Frontend đã khởi động."
+  },
+  "header": {
+    "brand":              "my-agent",
+    "brand_sub":          "internal",
+    "nav_home":           "Trang chủ",
+    "nav_projects":       "Projects",
+    "search_placeholder": "Tìm agent, prompt, tài liệu…",
+    "search_kbd":         "⌘K",
+    "notifications":      "Thông báo",
+    "notif_new":          "{{n}} mới",
+    "profile":            "Hồ sơ của tôi",
+    "settings":           "Cài đặt",
+    "signout":            "Đăng xuất",
+    "signing_out":        "Đang đăng xuất…"
   }
 }

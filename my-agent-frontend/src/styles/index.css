@@ -6,4 +6,9 @@
 @tailwind utilities;
 
 html, body, #root { height: 100%; }
-body { font-family: ui-sans-serif, system-ui, sans-serif; }
+body {
+  font-family: 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  background-color: var(--bg);
+  color: var(--fg);
+}

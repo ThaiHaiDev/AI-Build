@@ -1,0 +1,18 @@
+{
+  "title":        "Profile",
+  "sub":          "Manage your personal info and access.",
+  "meta":         "account / profile",
+  "personal":     "Personal info",
+  "personal_sub": "This information is visible to your colleagues in the workspace.",
+  "name":         "Full name",
+  "email":        "Work email",
+  "email_locked": "locked",
+  "employee_id":  "Employee ID",
+  "team":         "Department",
+  "manager":      "Direct manager",
+  "joined":       "Joined",
+  "edit_btn":     "Edit",
+  "save":         "Save changes",
+  "cancel":       "Cancel",
+  "saved":        "Saved"
+}

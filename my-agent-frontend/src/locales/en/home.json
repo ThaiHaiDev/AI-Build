@@ -1,0 +1,20 @@
+{
+  "greeting": {
+    "morning":   "Good morning",
+    "afternoon": "Good afternoon",
+    "evening":   "Good evening"
+  },
+  "workspace_meta": "workspace · engineering",
+  "sub":             "This is your internal workspace.",
+  "stat_agents":     "Active agents",
+  "stat_runs":       "Runs today",
+  "stat_docs":       "Indexed docs",
+  "stat_tokens":     "Tokens (24h)",
+  "your_projects":   "Your projects",
+  "see_all":         "See all",
+  "recent_runs":     "Recent runs",
+  "shared":          "Shared with you",
+  "running":         "Running",
+  "by":              "by",
+  "open":            "Open"
+}

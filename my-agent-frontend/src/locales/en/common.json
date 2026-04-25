@@ -1,18 +1,32 @@
 {
   "app_name": "MyAgent",
-  "loading": "Loading...",
-  "save": "Save",
-  "cancel": "Cancel",
-  "back": "Back",
+  "loading":  "Loading...",
+  "save":     "Save",
+  "cancel":   "Cancel",
+  "back":     "Back",
   "nav": {
-    "login": "Login",
+    "login":    "Login",
     "register": "Register",
-    "logout": "Logout",
-    "me": "Account",
+    "logout":   "Logout",
+    "me":       "Account",
     "projects": "Projects"
   },
   "home": {
-    "title": "Welcome",
+    "title":    "Welcome",
     "subtitle": "Frontend scaffold is up."
+  },
+  "header": {
+    "brand":              "my-agent",
+    "brand_sub":          "internal",
+    "nav_home":           "Home",
+    "nav_projects":       "Projects",
+    "search_placeholder": "Find agents, prompts, docs…",
+    "search_kbd":         "⌘K",
+    "notifications":      "Notifications",
+    "notif_new":          "{{n}} new",
+    "profile":            "My profile",
+    "settings":           "Settings",
+    "signout":            "Sign out",
+    "signing_out":        "Signing out…"
   }
 }

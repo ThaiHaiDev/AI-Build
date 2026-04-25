@@ -1,0 +1,363 @@
+@use '@/styles/breakpoints' as bp;
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 58px;
+  border-bottom: 1px solid var(--line-2);
+  background: color-mix(in oklch, var(--bg) 85%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 100%;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+
+  &:hover .logoIcon { filter: brightness(1.1); }
+}
+
+.logoIcon {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  background: var(--fg);
+  border-radius: 6px;
+  transition: filter 150ms;
+}
+
+.logoInner {
+  position: absolute;
+  inset: 3px;
+  border-radius: 4px;
+  background: var(--bg);
+  display: grid;
+  place-items: center;
+}
+
+.logoDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.logoText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.logoName {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+
+.logoSub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--fg-3);
+}
+
+/* Nav */
+.nav {
+  display: none;
+  align-items: center;
+  gap: 2px;
+
+  @include bp.up(md) { display: flex; }
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg-2);
+  text-decoration: none;
+  transition: background 120ms, color 120ms;
+
+  svg { color: var(--fg-3); }
+
+  &:hover {
+    background: var(--bg-2);
+    color: var(--fg);
+  }
+}
+
+.navItemActive {
+  background: var(--bg-2);
+  color: var(--fg);
+
+  svg { color: var(--accent); }
+}
+
+/* Search */
+.search {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  max-width: 360px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  cursor: text;
+
+  @include bp.up(sm) { display: flex; }
+}
+
+.searchPlaceholder {
+  flex: 1;
+  font-size: 13px;
+  color: var(--fg-3);
+  user-select: none;
+}
+
+.searchKbd {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--fg-3);
+}
+
+/* Right actions */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+/* Icon button (bell) */
+.iconBtn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--fg-2);
+  cursor: pointer;
+  transition: background 120ms;
+
+  &:hover { background: var(--bg-2); }
+}
+
+.notifDot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 1.5px solid var(--bg);
+}
+
+/* Avatar chip */
+.avatarChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 4px 4px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  cursor: pointer;
+  transition: background 120ms;
+
+  &:hover { background: var(--bg-2); }
+}
+
+.avatarCircle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--fg);
+  color: var(--bg);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.avatarName {
+  display: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @include bp.up(lg) { display: block; }
+}
+
+/* Dropdown shared */
+.dropdown,
+.notifDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow:
+    0 4px 6px -1px rgba(0,0,0,0.07),
+    0 20px 40px -16px rgba(0,0,0,0.12);
+  z-index: 50;
+  animation: dropIn 120ms ease-out;
+  overflow: hidden;
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown { width: 256px; }
+.notifDropdown { width: 320px; }
+
+.dropdownHeader {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dropdownName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.dropdownEmail {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  color: var(--fg-3);
+}
+
+.dropdownDivider {
+  height: 1px;
+  background: var(--line-2);
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 16px;
+  font-size: 13px;
+  color: var(--fg-2);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 100ms, color 100ms;
+
+  &:hover { background: var(--bg-2); color: var(--fg); }
+}
+
+.dropdownItemDanger {
+  color: var(--danger);
+  &:hover { background: color-mix(in oklch, var(--danger) 8%, transparent); color: var(--danger); }
+}
+
+/* Notification dropdown */
+.notifHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+
+.notifTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.notifBadge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--accent-2);
+  color: var(--accent);
+}
+
+.notifItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px;
+}
+
+.notifItemDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.notifItemBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.notifItemTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.notifItemMsg {
+  font-size: 12px;
+  color: var(--fg-2);
+}
+
+.notifItemTime {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--fg-3);
+  margin-top: 2px;
+}

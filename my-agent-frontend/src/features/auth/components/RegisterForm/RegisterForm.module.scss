@@ -1,83 +1,191 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 12px;
 }
 
-.pwdWrap {
-  position: relative;
-
-  input { padding-right: 2.75rem; }
-}
-
-.eye {
-  position: absolute;
-  top: 50%;
-  right: 0.5rem;
-  transform: translateY(-50%);
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-
-  &:hover { background: #f1f5f9; }
-}
-
-.strength {
-  margin-top: 0.375rem;
+.banner {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in oklch, var(--danger) 30%, var(--line));
+  background: color-mix(in oklch, var(--danger) 7%, transparent);
+  font-size: 13px;
+  color: var(--danger);
 }
 
-.bar {
-  flex: 1;
-  height: 4px;
-  border-radius: 999px;
-  background: #e2e8f0;
-  position: relative;
-  overflow: hidden;
+.bannerIcon { flex-shrink: 0; }
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    transition: all 200ms;
+/* 2-col row for name + team */
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg);
+  margin-bottom: 6px;
+}
+
+.inputWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  padding: 0 12px;
+  transition: border-color 120ms, box-shadow 120ms;
+
+  &:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 30%, transparent);
   }
 }
 
-.weak::after   { width: 33%;  background: #dc2626; }
-.medium::after { width: 66%;  background: #d97706; }
-.strong::after { width: 100%; background: #059669; }
+.inputInvalid {
+  border-color: var(--danger);
+
+  &:focus-within {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--danger) 20%, transparent);
+  }
+}
+
+.inputIcon {
+  color: var(--fg-3);
+  flex-shrink: 0;
+}
+
+.input,
+.select {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 10px 0;
+  font-size: 14px;
+  color: var(--fg);
+  font-family: inherit;
+
+  &::placeholder { color: var(--fg-3); }
+}
+
+.select {
+  cursor: pointer;
+  appearance: none;
+}
+
+.eyeBtn {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--fg-3);
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 120ms;
+
+  &:hover { color: var(--fg-2); }
+}
+
+.errorSlot {
+  min-height: 18px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--danger);
+}
+
+/* Strength meter */
+.strengthMeter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.strengthBars {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.strengthSeg {
+  flex: 1;
+  height: 4px;
+  border-radius: 9999px;
+  transition: background 200ms;
+}
 
 .strengthLabel {
-  font-size: 0.75rem;
-  color: #64748b;
-  min-width: 64px;
-  text-align: right;
+  font-size: 11px;
+  white-space: nowrap;
 }
 
-.submit {
+/* Submit button */
+.submitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
-  padding: 0.625rem 1rem !important;
-  font-size: 0.9375rem !important;
-  margin-top: 0.25rem;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  background: var(--fg);
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter 150ms, transform 100ms;
+  margin-top: 4px;
+
+  &:hover:not(:disabled) { filter: brightness(1.1); }
+  &:active:not(:disabled) { transform: scale(0.995); }
 }
 
-.link {
+.submitBtnDisabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.arrowIcon {
+  transition: transform 150ms;
+
+  .submitBtn:hover & { transform: translateX(2px); }
+}
+
+.footerHint {
+  font-size: 12px;
   text-align: center;
-  font-size: 0.875rem;
-  color: #64748b;
-  margin-top: 0.25rem;
+  color: var(--fg-3);
+  margin-top: 4px;
 }
 
-.linkAnchor {
-  color: #2563eb;
+.switchLink {
+  text-align: center;
+  font-size: 12px;
+  color: var(--fg-3);
+}
+
+.switchAnchor {
+  color: var(--fg);
   font-weight: 500;
-  text-decoration: none;
+  text-decoration: underline dotted;
+  text-underline-offset: 4px;
 
   &:hover { text-decoration: underline; }
 }

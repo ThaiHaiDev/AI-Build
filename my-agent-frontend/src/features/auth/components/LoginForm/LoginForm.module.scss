@@ -1,60 +1,249 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 12px;
 }
 
-.pwdWrap {
-  position: relative;
+/* Error banner */
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in oklch, var(--danger) 30%, var(--line));
+  background: color-mix(in oklch, var(--danger) 7%, transparent);
+  font-size: 13px;
+  color: var(--danger);
+}
 
-  input {
-    padding-right: 2.75rem;
+.bannerIcon {
+  flex-shrink: 0;
+}
+
+/* Field */
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.labelHint {
+  font-size: 12px;
+  color: var(--fg-3);
+  cursor: pointer;
+  transition: color 120ms;
+
+  &:hover { color: var(--fg); }
+}
+
+/* Input wrapper */
+.inputWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  padding: 0 12px;
+  transition: border-color 120ms, box-shadow 120ms;
+
+  &:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 30%, transparent);
   }
 }
 
-.eye {
-  position: absolute;
-  top: 50%;
-  right: 0.5rem;
-  transform: translateY(-50%);
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
+.inputInvalid {
+  border-color: var(--danger);
 
-  &:hover { background: #f1f5f9; }
+  &:focus-within {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--danger) 20%, transparent);
+  }
 }
 
-.remember {
+.inputIcon {
+  color: var(--fg-3);
+  flex-shrink: 0;
+}
+
+.input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 10px 0;
+  font-size: 14px;
+  color: var(--fg);
+  font-family: inherit;
+
+  &::placeholder { color: var(--fg-3); }
+}
+
+.eyeBtn {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--fg-3);
+  padding: 4px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: #475569;
+  transition: color 120ms;
+
+  &:hover { color: var(--fg-2); }
+}
+
+.errorSlot {
+  min-height: 18px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--danger);
+}
+
+/* Checkbox */
+.checkLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--fg-2);
   cursor: pointer;
   user-select: none;
 }
 
-.submit {
+.checkWrap {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.checkInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
   width: 100%;
-  padding: 0.625rem 1rem !important;
-  font-size: 0.9375rem !important;
-  margin-top: 0.25rem;
+  height: 100%;
+  cursor: pointer;
+  margin: 0;
+
+  &:checked + .checkBox {
+    background: var(--accent);
+    border-color: var(--accent);
+
+    &::after {
+      opacity: 1;
+    }
+  }
 }
 
-.link {
+.checkBox {
+  position: absolute;
+  inset: 0;
+  border-radius: 2px;
+  border: 1px solid var(--line);
+  background: #fff;
+  pointer-events: none;
+  transition: background 120ms, border-color 120ms;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    width: 6px;
+    height: 4px;
+    border-left: 1.8px solid #fff;
+    border-bottom: 1.8px solid #fff;
+    transform: rotate(-45deg);
+    opacity: 0;
+    transition: opacity 100ms;
+  }
+}
+
+/* Submit button */
+.submitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  background: var(--fg);
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter 150ms, transform 100ms;
+  margin-top: 4px;
+
+  &:hover:not(:disabled) { filter: brightness(1.1); }
+  &:active:not(:disabled) { transform: scale(0.995); }
+}
+
+.submitBtnDisabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.arrowIcon {
+  transition: transform 150ms;
+  .submitBtn:hover & {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes drawTick {
+  from { stroke-dashoffset: 24; }
+  to { stroke-dashoffset: 0; }
+}
+
+.tickAnim path {
+  stroke-dasharray: 24;
+  animation: drawTick 0.45s ease-out forwards;
+}
+
+/* Footer hint */
+.footerHint {
+  font-size: 12px;
   text-align: center;
-  font-size: 0.875rem;
-  color: #64748b;
-  margin-top: 0.25rem;
+  color: var(--fg-3);
+  margin-top: 4px;
 }
 
-.linkAnchor {
-  color: #2563eb;
-  font-weight: 500;
-  text-decoration: none;
+/* Switch link */
+.switchLink {
+  text-align: center;
+  font-size: 12px;
+  color: var(--fg-3);
+  margin-top: 4px;
+}
 
-  &:hover { text-decoration: underline; }
+.switchAnchor {
+  color: var(--fg);
+  font-weight: 500;
+  text-decoration: underline dotted;
+  text-underline-offset: 4px;
+  transition: color 120ms;
+
+  &:hover { color: var(--fg); text-decoration: underline; }
 }

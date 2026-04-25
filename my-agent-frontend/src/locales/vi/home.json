@@ -1,0 +1,20 @@
+{
+  "greeting": {
+    "morning":   "Chào buổi sáng",
+    "afternoon": "Chào buổi chiều",
+    "evening":   "Chào buổi tối"
+  },
+  "workspace_meta": "workspace · engineering",
+  "sub":             "Đây là không gian làm việc nội bộ của bạn.",
+  "stat_agents":     "Agent đang hoạt động",
+  "stat_runs":       "Phiên chạy hôm nay",
+  "stat_docs":       "Tài liệu đã index",
+  "stat_tokens":     "Token sử dụng (24h)",
+  "your_projects":   "Project của bạn",
+  "see_all":         "Xem tất cả",
+  "recent_runs":     "Phiên chạy gần đây",
+  "shared":          "Được chia sẻ với bạn",
+  "running":         "Đang chạy",
+  "by":              "bởi",
+  "open":            "Mở"
+}

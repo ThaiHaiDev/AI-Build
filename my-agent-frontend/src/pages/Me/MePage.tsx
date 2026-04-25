@@ -1,85 +1,212 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { useAuthStore } from '@/features/auth/store/authStore'
-import { authService } from '@/features/auth/services/authService'
-import { toast } from '@/components/ui/Toast'
-import { Button } from '@/components/ui/Button'
-import { routes } from '@/router/routes'
-import { formatDate } from '@/utils/formatters'
-import { logger } from '@/lib/logger'
-import styles from './MePage.module.scss'
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '@/features/auth/store/authStore';
+import { meService } from '@/features/me/services/meService';
+import { logger } from '@/lib/logger';
+import styles from './MePage.module.scss';
+
+const TEAMS = ['Engineering', 'Product', 'Design', 'Data', 'Operations'];
+
+function avatarInitials(name: string) {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join('');
+}
 
 export default function MePage() {
-  const { t, i18n } = useTranslation('auth')
-  const user   = useAuthStore((s) => s.user)
-  const logout = useAuthStore((s) => s.logout)
-  const navigate = useNavigate()
-  const [signingOut, setSigningOut] = useState(false)
+  const { t, i18n } = useTranslation('me');
+  const user = useAuthStore((s) => s.user);
 
-  if (!user) return null
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
-  const handleLogout = async () => {
-    setSigningOut(true)
-    try {
-      await authService.logout()
-    } catch (err) {
-      logger.warn('Logout API failed, clearing local state anyway', { err })
-    } finally {
-      logout()
-      toast.success(t('toast.logout_success'))
-      navigate(routes.login, { replace: true })
+  const [form, setForm] = useState({ name: '', team: 'Engineering', manager: '' });
+
+  useEffect(() => {
+    if (user) {
+      setForm({ name: user.name ?? '', team: 'Engineering', manager: '' });
     }
-  }
+  }, [user]);
 
-  const initial = (user.name?.trim()?.[0] ?? user.email[0] ?? '?').toUpperCase()
-  const locale  = i18n.resolvedLanguage === 'vi' ? 'DD/MM/YYYY' : 'MMM D, YYYY'
+  if (!user) return null;
+
+  const ini = avatarInitials(user.name || user.email);
+
+  const joinedDate = user.createdAt
+    ? new Date(user.createdAt).toLocaleDateString(
+        i18n.resolvedLanguage === 'vi' ? 'vi-VN' : 'en-US',
+        { year: 'numeric', month: 'long', day: 'numeric' }
+      )
+    : '—';
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await meService.updateProfile({ name: form.name, team: form.team, manager: form.manager });
+      setEditing(false);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 1800);
+    } catch (err) {
+      logger.warn('Profile update failed', { err });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setForm({ name: user.name ?? '', team: 'Engineering', manager: '' });
+    setEditing(false);
+  };
 
   return (
-    <div className={styles.wrap}>
-      <section className={styles.card}>
-        <header className={styles.header}>
-          <h1 className={styles.title}>{t('me.title')}</h1>
-        </header>
+    <div className={styles.page}>
+      {/* Page header */}
+      <div className={styles.pageHeader}>
+        <div>
+          <p className={styles.pageMeta}>
+            <span className={styles.greenDot} />
+            <span>{t('meta')}</span>
+          </p>
+          <h1 className={styles.pageTitle}>{t('title')}</h1>
+          <p className={styles.pageSub}>{t('sub')}</p>
+        </div>
+        {saved && (
+          <div className={styles.savedFlash}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M4 12l6 6L20 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {t('saved')}
+          </div>
+        )}
+      </div>
 
-        <div className={styles.body}>
-          <div className={styles.avatar} aria-hidden="true">{initial}</div>
-
-          <dl className={styles.fields}>
-            <div className={styles.row}>
-              <dt className={styles.label}>{t('me.name')}</dt>
-              <dd className={styles.value}>{user.name ?? t('me.not_provided')}</dd>
-            </div>
-            <div className={styles.row}>
-              <dt className={styles.label}>{t('me.email')}</dt>
-              <dd className={styles.value}>{user.email}</dd>
-            </div>
-            <div className={styles.row}>
-              <dt className={styles.label}>{t('me.role')}</dt>
-              <dd className={styles.value}>
-                <span className={styles.roleBadge}>{user.role}</span>
-              </dd>
-            </div>
-            <div className={styles.row}>
-              <dt className={styles.label}>{t('me.joined')}</dt>
-              <dd className={styles.value}>
-                {user.createdAt ? formatDate(user.createdAt, locale) : t('me.not_provided')}
-              </dd>
-            </div>
-          </dl>
+      {/* Identity strip card */}
+      <div className={styles.identityCard}>
+        {/* Dark banner */}
+        <div className={styles.identityBanner}>
+          <div className={styles.identityGridBg} />
+          <div className={styles.identityBlob} />
         </div>
 
-        <footer className={styles.footer}>
-          <Button
-            variant="secondary"
-            onClick={handleLogout}
-            loading={signingOut}
-            className={styles.logoutBtn}
-          >
-            {signingOut ? t('me.logging_out') : t('me.logout')}
-          </Button>
-        </footer>
-      </section>
+        {/* Avatar + info row */}
+        <div className={styles.identityRow}>
+          <div className={styles.avatar}>{ini}</div>
+          <div className={styles.identityInfo}>
+            <span className={styles.identityName}>{user.name}</span>
+            <span className={styles.rolePill}>{user.role}</span>
+            <span className={styles.identitySub}>
+              {user.email}
+            </span>
+          </div>
+          {!editing && (
+            <button type="button" className={styles.editBtn} onClick={() => setEditing(true)}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M4 20h4L20 8l-4-4L4 16v4z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+              </svg>
+              {t('edit_btn')}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Personal info card */}
+      <div className={styles.infoCard}>
+        <div className={styles.infoCardHead}>
+          <span className={styles.infoCardTitle}>{t('personal')}</span>
+          <span className={styles.infoCardSub}>{t('personal_sub')}</span>
+        </div>
+
+        <div className={styles.infoGrid}>
+          {/* Name — editable */}
+          <div className={styles.infoField}>
+            <span className={styles.infoLabel}>{t('name')}</span>
+            {editing ? (
+              <input
+                className={styles.infoInput}
+                value={form.name}
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              />
+            ) : (
+              <span className={styles.infoValue}>{form.name || '—'}</span>
+            )}
+          </div>
+
+          {/* Email — locked */}
+          <div className={styles.infoField}>
+            <span className={styles.infoLabelRow}>
+              <span className={styles.infoLabel}>{t('email')}</span>
+              <span className={styles.infoLocked}>{t('email_locked')}</span>
+            </span>
+            <span className={styles.infoValue}>{user.email}</span>
+          </div>
+
+          {/* Employee ID — read-only */}
+          <div className={styles.infoField}>
+            <span className={styles.infoLabel}>{t('employee_id')}</span>
+            <span className={`${styles.infoValue} ${styles.mono}`}>EMP-{user.id.slice(0, 6).toUpperCase()}</span>
+          </div>
+
+          {/* Team — editable */}
+          <div className={styles.infoField}>
+            <span className={styles.infoLabel}>{t('team')}</span>
+            {editing ? (
+              <select
+                className={styles.infoSelect}
+                value={form.team}
+                onChange={(e) => setForm((f) => ({ ...f, team: e.target.value }))}
+              >
+                {TEAMS.map((tm) => (
+                  <option key={tm} value={tm}>{tm}</option>
+                ))}
+              </select>
+            ) : (
+              <span className={styles.infoValue}>{form.team}</span>
+            )}
+          </div>
+
+          {/* Manager — editable */}
+          <div className={styles.infoField}>
+            <span className={styles.infoLabel}>{t('manager')}</span>
+            {editing ? (
+              <input
+                className={styles.infoInput}
+                value={form.manager}
+                placeholder="—"
+                onChange={(e) => setForm((f) => ({ ...f, manager: e.target.value }))}
+              />
+            ) : (
+              <span className={styles.infoValue}>{form.manager || '—'}</span>
+            )}
+          </div>
+
+          {/* Joined — read-only */}
+          <div className={styles.infoField}>
+            <span className={styles.infoLabel}>{t('joined')}</span>
+            <span className={`${styles.infoValue} ${styles.mono}`}>{joinedDate}</span>
+          </div>
+        </div>
+
+        {/* Edit actions footer */}
+        {editing && (
+          <div className={styles.editFooter}>
+            <button type="button" className={styles.cancelBtn} onClick={handleCancel}>
+              {t('cancel')}
+            </button>
+            <button
+              type="button"
+              className={styles.saveBtn}
+              onClick={handleSave}
+              disabled={saving}
+            >
+              {saving ? '…' : t('save')}
+            </button>
+          </div>
+        )}
+      </div>
     </div>
-  )
+  );
 }

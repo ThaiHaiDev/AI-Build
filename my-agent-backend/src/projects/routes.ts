@@ -28,6 +28,7 @@ projectsRouter.post('/projects/:id/unarchive', superAdmin, ProjectController.una
 projectsRouter.get('/projects/:id/members', requireProjectAccess, ProjectController.listMembers);
 projectsRouter.post('/projects/:id/members', superAdmin, projectWriteLimiter, ProjectController.addMember);
 projectsRouter.delete('/projects/:id/members/:userId', superAdmin, ProjectController.removeMember);
+projectsRouter.patch('/projects/:id/members/:memberId/env-access', requireProjectAccess, ProjectController.updateEnvAccess);
 
 // Users (search for add-member modal)
 projectsRouter.get('/users', superAdmin, UserController.search);

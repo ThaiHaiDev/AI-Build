@@ -2476,6 +2476,7 @@ Khi AI agent sinh code từ tài liệu này, **phải tuân theo**:
 17. **Route → Controller → Service**: route chỉ wire middleware + controller method. Controller xử lý `req/res`. Service chứa business logic thuần, **không đụng `req/res`**.
 18. **Cronjob dùng BullMQ repeatable** (`src/jobs/*.job.ts` + `cronQueue`) — không dùng `node-cron` in-process. Job handler chỉ gọi service, không chứa logic chi tiết.
 19. **Auth là module tự trị tại `src/auth/`** — business code **chỉ** import từ barrel `@/auth` (`requireAuth`, `requireRole`, `authRouter`, `ROLES`, `AuthUser`), **không** reach sâu vào `@/auth/services/*` hoặc `@/auth/stores/*`. Password hash bằng **argon2id** (cấm bcrypt/sha1/md5). Access token JWT TTL ≤ 15 phút, refresh token là opaque random lưu SHA-256 hash trong Redis, gửi qua httpOnly Secure SameSite=Strict cookie, **rotate mỗi lần refresh** + revoke cả family khi phát hiện reuse. Mọi endpoint login/register/reset phải qua `authRateLimiter` (giới hạn theo IP và theo email).
+20. **Thêm hoặc sửa API → phải viết / cập nhật FE API docs** tại `docs/sprints/<sprint-folder>/05-api-docs.md` **trước khi mark task done**. File docs phải có: method + path, auth level, request body (field/type/required/default), response 2xx example, bảng error codes, và lưu ý tích hợp FE nếu có (side effect, breaking change, field đổi tên...). Không viết docs thì task chưa được tính là hoàn thành.
 
 ---
 

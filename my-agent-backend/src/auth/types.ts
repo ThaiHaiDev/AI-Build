@@ -31,6 +31,7 @@ declare global {
     interface Request {
       user?: AuthUser & { jti: string };
       memberRole?: 'admin' | 'user';
+      memberEnvs?: string[];
     }
   }
 }

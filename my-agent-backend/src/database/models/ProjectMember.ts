@@ -3,15 +3,19 @@ import { sequelize } from '../sequelize.js';
 import { Project } from './Project.js';
 import { User } from './User.js';
 
+export const ALL_ENVS = ['dev', 'staging', 'production'] as const;
+export type Environment = typeof ALL_ENVS[number];
+
 export class ProjectMember extends Model<InferAttributes<ProjectMember>, InferCreationAttributes<ProjectMember>> {
-  declare id:         CreationOptional<string>;
-  declare projectId:  string;
-  declare userId:     string;
-  declare addedAt:    CreationOptional<Date>;
-  declare removedAt:  CreationOptional<Date | null>;
-  declare addedBy:    string;
-  declare createdAt:  CreationOptional<Date>;
-  declare updatedAt:  CreationOptional<Date>;
+  declare id:          CreationOptional<string>;
+  declare projectId:   string;
+  declare userId:      string;
+  declare allowedEnvs: CreationOptional<string[]>;
+  declare addedAt:     CreationOptional<Date>;
+  declare removedAt:   CreationOptional<Date | null>;
+  declare addedBy:     string;
+  declare createdAt:   CreationOptional<Date>;
+  declare updatedAt:   CreationOptional<Date>;
 }
 
 ProjectMember.init(
@@ -19,6 +23,12 @@ ProjectMember.init(
     id:        { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
     projectId: { type: DataTypes.UUID, allowNull: false, field: 'project_id' },
     userId:    { type: DataTypes.UUID, allowNull: false, field: 'user_id' },
+    allowedEnvs: {
+      type: DataTypes.ARRAY(DataTypes.TEXT),
+      allowNull: false,
+      defaultValue: ALL_ENVS,
+      field: 'allowed_envs',
+    },
     addedAt:   { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW, field: 'added_at' },
     removedAt: { type: DataTypes.DATE, allowNull: true,  field: 'removed_at' },
     addedBy:   { type: DataTypes.UUID, allowNull: false, field: 'added_by' },

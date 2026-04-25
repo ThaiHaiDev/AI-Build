@@ -21,8 +21,19 @@ export const createProjectSchema = z.object({
 
 export const updateProjectSchema = createProjectSchema.partial();
 
+const VALID_ENVS = ['dev', 'staging', 'production'] as const;
+
 export const addMemberSchema = z.object({
-  userId: z.string().uuid(),
+  userId:      z.string().uuid(),
+  allowedEnvs: z
+    .array(z.enum(VALID_ENVS))
+    .min(1, 'Must allow at least one environment')
+    .optional()
+    .default(['dev']),
+});
+
+export const envAccessSchema = z.object({
+  allowedEnvs: z.array(z.enum(VALID_ENVS)).min(1, 'Must allow at least one environment'),
 });
 
 export const listProjectsQuerySchema = z.object({

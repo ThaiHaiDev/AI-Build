@@ -29,11 +29,17 @@ export const projectService = {
   listMembers: (id: string) =>
     api.get<{ members: ProjectMember[] }>(ENDPOINTS.PROJECTS.MEMBERS(id)),
 
-  addMember: (id: string, userId: string) =>
-    api.post<{ members: ProjectMember[] }>(ENDPOINTS.PROJECTS.MEMBERS(id), { userId }),
+  addMember: (id: string, userId: string, allowedEnvs?: string[]) =>
+    api.post<{ members: ProjectMember[] }>(ENDPOINTS.PROJECTS.MEMBERS(id), { userId, allowedEnvs }),
 
   removeMember: (id: string, userId: string) =>
     api.delete<{ members: ProjectMember[] }>(ENDPOINTS.PROJECTS.MEMBER(id, userId)),
+
+  updateEnvAccess: (id: string, memberId: string, allowedEnvs: string[]) =>
+    api.patch<{ member: Pick<ProjectMember, 'id' | 'userId' | 'allowedEnvs'> }>(
+      ENDPOINTS.PROJECTS.MEMBER_ENV_ACCESS(id, memberId),
+      { allowedEnvs },
+    ),
 
   searchUsers: (search: string) =>
     api.get<{ users: UserSummary[] }>(ENDPOINTS.USERS.SEARCH, { params: { search } }),

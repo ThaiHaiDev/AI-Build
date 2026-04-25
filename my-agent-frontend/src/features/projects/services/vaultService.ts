@@ -1,10 +1,10 @@
 import api from '@/services/rest/api'
 import { ENDPOINTS } from '@/services/rest/endpoints'
-import type { AccountsByEnv, TestAccount, CreateTestAccountInput, UpdateTestAccountInput } from '../types/project.types'
+import type { VaultListResponse, TestAccount, CreateTestAccountInput, UpdateTestAccountInput } from '../types/project.types'
 
 export const vaultService = {
   list:   (projectId: string) =>
-    api.get<{ accounts: AccountsByEnv }>(ENDPOINTS.PROJECTS.ACCOUNTS(projectId)),
+    api.get<VaultListResponse>(ENDPOINTS.PROJECTS.ACCOUNTS(projectId)),
 
   create: (projectId: string, body: CreateTestAccountInput) =>
     api.post<{ account: TestAccount }>(ENDPOINTS.PROJECTS.ACCOUNTS(projectId), body),

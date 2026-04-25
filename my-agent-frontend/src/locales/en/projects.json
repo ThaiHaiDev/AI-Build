@@ -67,7 +67,14 @@
     "already_member": "Already a member",
     "no_results": "No matching user.",
     "confirm_remove_title": "Remove member?",
-    "confirm_remove_body": "You are about to remove {{name}} from this project. Continue?"
+    "confirm_remove_body": "You are about to remove {{name}} from this project. Continue?",
+    "env_access_btn": "Edit env access",
+    "env_access_modal_title": "Environment access for {{name}}",
+    "env_dev": "Dev",
+    "env_staging": "Staging",
+    "env_production": "Production",
+    "env_access_save": "Save",
+    "toast_env_access_updated": "Environment access updated."
   },
   "archive": {
     "confirm_title": "Archive project?",

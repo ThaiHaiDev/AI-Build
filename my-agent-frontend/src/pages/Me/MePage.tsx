@@ -2,10 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { meService } from '@/features/me/services/meService';
-import { logger } from '@/lib/logger';
 import styles from './MePage.module.scss';
-
-const TEAMS = ['Engineering', 'Product', 'Design', 'Data', 'Operations'];
 
 function avatarInitials(name: string) {
   return name
@@ -18,48 +15,73 @@ function avatarInitials(name: string) {
 
 export default function MePage() {
   const { t, i18n } = useTranslation('me');
-  const user = useAuthStore((s) => s.user);
+  const user    = useAuthStore((s) => s.user);
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const token   = useAuthStore((s) => s.token);
 
   const [editing, setEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saving,  setSaving]  = useState(false);
+  const [saved,   setSaved]   = useState(false);
+  const [nameVal, setNameVal] = useState('');
 
-  const [form, setForm] = useState({ name: '', team: 'Engineering', manager: '' });
+  const [pwForm,    setPwForm]    = useState({ current: '', next: '', confirm: '' });
+  const [pwSaving,  setPwSaving]  = useState(false);
+  const [pwError,   setPwError]   = useState('');
+  const [pwSaved,   setPwSaved]   = useState(false);
 
   useEffect(() => {
-    if (user) {
-      setForm({ name: user.name ?? '', team: 'Engineering', manager: '' });
-    }
+    if (user) setNameVal(user.name ?? '');
   }, [user]);
 
   if (!user) return null;
 
-  const ini = avatarInitials(user.name || user.email);
-
+  const ini       = avatarInitials(user.name || user.email);
   const joinedDate = user.createdAt
     ? new Date(user.createdAt).toLocaleDateString(
         i18n.resolvedLanguage === 'vi' ? 'vi-VN' : 'en-US',
-        { year: 'numeric', month: 'long', day: 'numeric' }
+        { year: 'numeric', month: 'long', day: 'numeric' },
       )
     : '—';
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      await meService.updateProfile({ name: form.name, team: form.team, manager: form.manager });
+      const res = await meService.updateName(nameVal.trim());
+      setAuth({ ...user, name: res.data.user.name }, token ?? '');
       setEditing(false);
       setSaved(true);
       setTimeout(() => setSaved(false), 1800);
-    } catch (err) {
-      logger.warn('Profile update failed', { err });
+    } catch {
+      // name update failed — keep editing open
     } finally {
       setSaving(false);
     }
   };
 
   const handleCancel = () => {
-    setForm({ name: user.name ?? '', team: 'Engineering', manager: '' });
+    setNameVal(user.name ?? '');
     setEditing(false);
+  };
+
+  const handlePwChange = async () => {
+    setPwError('');
+    if (pwForm.next !== pwForm.confirm) {
+      setPwError(t('error_password_mismatch'));
+      return;
+    }
+    setPwSaving(true);
+    try {
+      await meService.changePassword(pwForm.current, pwForm.next);
+      setPwForm({ current: '', next: '', confirm: '' });
+      setPwSaved(true);
+      setTimeout(() => setPwSaved(false), 1800);
+    } catch (err: unknown) {
+      const code = (err as { response?: { data?: { error?: { code?: string } } } })
+        ?.response?.data?.error?.code;
+      setPwError(code === 'VALIDATION' ? t('error_wrong_password') : t('error_generic'));
+    } finally {
+      setPwSaving(false);
+    }
   };
 
   return (
@@ -86,21 +108,16 @@ export default function MePage() {
 
       {/* Identity strip card */}
       <div className={styles.identityCard}>
-        {/* Dark banner */}
         <div className={styles.identityBanner}>
           <div className={styles.identityGridBg} />
           <div className={styles.identityBlob} />
         </div>
-
-        {/* Avatar + info row */}
         <div className={styles.identityRow}>
           <div className={styles.avatar}>{ini}</div>
           <div className={styles.identityInfo}>
             <span className={styles.identityName}>{user.name}</span>
             <span className={styles.rolePill}>{user.role}</span>
-            <span className={styles.identitySub}>
-              {user.email}
-            </span>
+            <span className={styles.identitySub}>{user.email}</span>
           </div>
           {!editing && (
             <button type="button" className={styles.editBtn} onClick={() => setEditing(true)}>
@@ -127,11 +144,11 @@ export default function MePage() {
             {editing ? (
               <input
                 className={styles.infoInput}
-                value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                value={nameVal}
+                onChange={(e) => setNameVal(e.target.value)}
               />
             ) : (
-              <span className={styles.infoValue}>{form.name || '—'}</span>
+              <span className={styles.infoValue}>{nameVal || '—'}</span>
             )}
           </div>
 
@@ -150,39 +167,6 @@ export default function MePage() {
             <span className={`${styles.infoValue} ${styles.mono}`}>EMP-{user.id.slice(0, 6).toUpperCase()}</span>
           </div>
 
-          {/* Team — editable */}
-          <div className={styles.infoField}>
-            <span className={styles.infoLabel}>{t('team')}</span>
-            {editing ? (
-              <select
-                className={styles.infoSelect}
-                value={form.team}
-                onChange={(e) => setForm((f) => ({ ...f, team: e.target.value }))}
-              >
-                {TEAMS.map((tm) => (
-                  <option key={tm} value={tm}>{tm}</option>
-                ))}
-              </select>
-            ) : (
-              <span className={styles.infoValue}>{form.team}</span>
-            )}
-          </div>
-
-          {/* Manager — editable */}
-          <div className={styles.infoField}>
-            <span className={styles.infoLabel}>{t('manager')}</span>
-            {editing ? (
-              <input
-                className={styles.infoInput}
-                value={form.manager}
-                placeholder="—"
-                onChange={(e) => setForm((f) => ({ ...f, manager: e.target.value }))}
-              />
-            ) : (
-              <span className={styles.infoValue}>{form.manager || '—'}</span>
-            )}
-          </div>
-
           {/* Joined — read-only */}
           <div className={styles.infoField}>
             <span className={styles.infoLabel}>{t('joined')}</span>
@@ -190,7 +174,6 @@ export default function MePage() {
           </div>
         </div>
 
-        {/* Edit actions footer */}
         {editing && (
           <div className={styles.editFooter}>
             <button type="button" className={styles.cancelBtn} onClick={handleCancel}>
@@ -200,12 +183,66 @@ export default function MePage() {
               type="button"
               className={styles.saveBtn}
               onClick={handleSave}
-              disabled={saving}
+              disabled={saving || nameVal.trim() === ''}
             >
               {saving ? '…' : t('save')}
             </button>
           </div>
         )}
+      </div>
+
+      {/* Change password card */}
+      <div className={styles.infoCard}>
+        <div className={styles.infoCardHead}>
+          <span className={styles.infoCardTitle}>{t('password_section')}</span>
+          <span className={styles.infoCardSub}>{t('password_section_sub')}</span>
+        </div>
+
+        <div className={styles.infoGrid} style={{ gridTemplateColumns: '1fr' }}>
+          <div className={styles.infoField}>
+            <span className={styles.infoLabel}>{t('current_password')}</span>
+            <input
+              type="password"
+              className={styles.infoInput}
+              value={pwForm.current}
+              onChange={(e) => setPwForm((f) => ({ ...f, current: e.target.value }))}
+              autoComplete="current-password"
+            />
+          </div>
+          <div className={styles.infoField}>
+            <span className={styles.infoLabel}>{t('new_password')}</span>
+            <input
+              type="password"
+              className={styles.infoInput}
+              value={pwForm.next}
+              onChange={(e) => setPwForm((f) => ({ ...f, next: e.target.value }))}
+              autoComplete="new-password"
+            />
+          </div>
+          <div className={styles.infoField}>
+            <span className={styles.infoLabel}>{t('confirm_password')}</span>
+            <input
+              type="password"
+              className={styles.infoInput}
+              value={pwForm.confirm}
+              onChange={(e) => setPwForm((f) => ({ ...f, confirm: e.target.value }))}
+              autoComplete="new-password"
+            />
+          </div>
+          {pwError && <p className="text-xs text-red-600">{pwError}</p>}
+          {pwSaved && <p className="text-xs text-green-600">{t('password_saved')}</p>}
+        </div>
+
+        <div className={styles.editFooter}>
+          <button
+            type="button"
+            className={styles.saveBtn}
+            onClick={handlePwChange}
+            disabled={pwSaving || !pwForm.current || !pwForm.next || !pwForm.confirm}
+          >
+            {pwSaving ? '…' : t('change_password_btn')}
+          </button>
+        </div>
       </div>
     </div>
   );

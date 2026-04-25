@@ -1,0 +1,50 @@
+{
+  "title": "User Management",
+  "sub": "Manage all accounts in the system.",
+  "filter": {
+    "role_all": "All roles",
+    "status_all": "All statuses",
+    "status_active": "Active",
+    "status_deactivated": "Deactivated"
+  },
+  "table": {
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "created_at": "Created at",
+    "actions": "Actions"
+  },
+  "badge": {
+    "active": "Active",
+    "deactivated": "Deactivated"
+  },
+  "create_btn": "+ Create user",
+  "create_modal": {
+    "title": "Create new user",
+    "email": "Email",
+    "name": "Full name",
+    "password": "Password",
+    "role": "Role",
+    "submit": "Create user"
+  },
+  "change_role": {
+    "confirm_title": "Change role?",
+    "confirm_body": "Change {{name}}'s role to {{role}}?"
+  },
+  "deactivate": {
+    "btn": "Deactivate",
+    "confirm_title": "Deactivate account?",
+    "confirm_body": "{{name}} will be immediately logged out of all sessions and can no longer sign in."
+  },
+  "toast": {
+    "created": "User created.",
+    "role_changed": "Role updated.",
+    "deactivated": "Account deactivated."
+  },
+  "error": {
+    "email_duplicate": "This email is already in use.",
+    "self_action": "You cannot perform this action on your own account.",
+    "generic": "Something went wrong. Please try again."
+  }
+}

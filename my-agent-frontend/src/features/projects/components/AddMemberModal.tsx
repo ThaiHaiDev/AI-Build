@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/Button'
 import { toast } from '@/components/ui/Toast'
 import { projectService } from '../services/projectService'
 import { parseProjectError } from '../utils/parseProjectError'
-import type { ProjectMember, UserSummary } from '../types/project.types'
+import type { ProjectMember, UserSummary, Environment } from '../types/project.types'
+
+const ALL_ENVS: Environment[] = ['dev', 'staging', 'production']
 
 interface Props {
   open:            boolean
@@ -18,12 +20,19 @@ interface Props {
 
 export function AddMemberModal({ open, projectId, currentMembers, onClose, onSuccess }: Props) {
   const { t } = useTranslation('projects')
-  const [query, setQuery]     = useState('')
-  const [results, setResults] = useState<UserSummary[]>([])
-  const [loading, setLoading] = useState(false)
-  const [adding, setAdding]   = useState<string | null>(null)
+  const [query, setQuery]           = useState('')
+  const [results, setResults]       = useState<UserSummary[]>([])
+  const [loading, setLoading]       = useState(false)
+  const [adding, setAdding]         = useState<string | null>(null)
+  const [allowedEnvs, setAllowedEnvs] = useState<Environment[]>(['dev'])
 
   const activeIds = useMemo(() => new Set(currentMembers.map((m) => m.userId)), [currentMembers])
+
+  const toggleEnv = (env: Environment) => {
+    setAllowedEnvs((prev) =>
+      prev.includes(env) ? prev.filter((e) => e !== env) : [...prev, env],
+    )
+  }
 
   useEffect(() => {
     if (!open) {
@@ -56,7 +65,7 @@ export function AddMemberModal({ open, projectId, currentMembers, onClose, onSuc
   const handleAdd = async (userId: string) => {
     setAdding(userId)
     try {
-      const res = await projectService.addMember(projectId, userId)
+      const res = await projectService.addMember(projectId, userId, allowedEnvs)
       toast.success(t('toast.add_member_success'))
       onSuccess(res.data.members)
       onClose()
@@ -74,6 +83,21 @@ export function AddMemberModal({ open, projectId, currentMembers, onClose, onSuc
     <Modal open={open} onClose={onClose}>
       <div className="w-[480px] max-w-full">
         <h2 className="mb-3 text-lg font-semibold text-gray-900">{t('members.search_title')}</h2>
+
+        <div className="mb-3 flex flex-wrap gap-3">
+          {ALL_ENVS.map((env) => (
+            <label key={env} className="flex cursor-pointer items-center gap-1.5 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                checked={allowedEnvs.includes(env)}
+                onChange={() => toggleEnv(env)}
+                className="h-4 w-4 rounded border-gray-300 accent-blue-600"
+              />
+              {t(`members.env_${env}`)}
+            </label>
+          ))}
+        </div>
+
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}

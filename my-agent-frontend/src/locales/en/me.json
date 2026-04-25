@@ -14,5 +14,15 @@
   "edit_btn":     "Edit",
   "save":         "Save changes",
   "cancel":       "Cancel",
-  "saved":        "Saved"
+  "saved":        "Saved",
+  "password_section":    "Change password",
+  "password_section_sub":"After saving, other sessions will be logged out.",
+  "current_password":    "Current password",
+  "new_password":        "New password",
+  "confirm_password":    "Confirm new password",
+  "change_password_btn": "Change password",
+  "password_saved":      "Password changed.",
+  "error_wrong_password":"Current password is incorrect.",
+  "error_password_mismatch": "Passwords do not match.",
+  "error_generic":       "Something went wrong. Please try again."
 }

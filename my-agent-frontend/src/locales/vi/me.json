@@ -14,5 +14,15 @@
   "edit_btn":     "Chỉnh sửa",
   "save":         "Lưu thay đổi",
   "cancel":       "Huỷ",
-  "saved":        "Đã lưu"
+  "saved":        "Đã lưu",
+  "password_section":    "Đổi mật khẩu",
+  "password_section_sub":"Sau khi lưu, các phiên đăng nhập khác sẽ bị đăng xuất.",
+  "current_password":    "Mật khẩu hiện tại",
+  "new_password":        "Mật khẩu mới",
+  "confirm_password":    "Xác nhận mật khẩu mới",
+  "change_password_btn": "Đổi mật khẩu",
+  "password_saved":      "Đã đổi mật khẩu.",
+  "error_wrong_password":"Mật khẩu hiện tại không đúng.",
+  "error_password_mismatch": "Mật khẩu xác nhận không khớp.",
+  "error_generic":       "Đã có lỗi xảy ra, vui lòng thử lại."
 }

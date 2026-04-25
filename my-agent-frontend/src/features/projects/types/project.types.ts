@@ -19,13 +19,14 @@ export interface Project {
 }
 
 export interface ProjectMember {
-  id:      string
-  userId:  string
-  email:   string
-  name:    string
-  role:    Role
-  addedAt: string
-  addedBy: string
+  id:          string
+  userId:      string
+  email:       string
+  name:        string
+  role:        Role
+  allowedEnvs: string[]
+  addedAt:     string
+  addedBy:     string
 }
 
 export interface UserSummary {
@@ -66,7 +67,12 @@ export interface TestAccount {
   updatedAt:   string
 }
 
-export type AccountsByEnv = Record<Environment, TestAccount[]>
+export type AccountsByEnv = Partial<Record<Environment, TestAccount[]>>
+
+export interface VaultListResponse {
+  accounts:    AccountsByEnv
+  grantedEnvs: Environment[]
+}
 
 export interface CreateTestAccountInput {
   environment: Environment

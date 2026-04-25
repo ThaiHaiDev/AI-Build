@@ -33,6 +33,12 @@ api.interceptors.response.use(
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
     const url             = originalRequest?.url ?? ''
 
+    const errorCode = error.response?.data?.error?.code
+    if (errorCode === 'ACCOUNT_DEACTIVATED') {
+      useAuthStore.getState().logout()
+      return Promise.reject(error)
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry && !SKIP_REFRESH.has(url)) {
       originalRequest._retry = true
       try {

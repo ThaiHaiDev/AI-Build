@@ -20,16 +20,18 @@ export const routes = {
   dashboard:    '/dashboard',
   projects:     '/projects',
   projectDetail:(id: string) => `/projects/${id}`,
+  adminUsers:   '/admin/users',
   notFound:     '/404',
 } as const
 
 export const appRoutes: AppRoute[] = [
-  { path: routes.home,      routeType: 'public',    layout: 'app',  lazy: () => import('@/pages/Home') },
-  { path: routes.login,     routeType: 'auth',      layout: 'auth', lazy: () => import('@/pages/Login') },
-  { path: routes.register,  routeType: 'auth',      layout: 'auth', lazy: () => import('@/pages/Register') },
-  { path: routes.me,        routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/Me') },
-  { path: routes.dashboard, routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/Dashboard') },
-  { path: routes.projects,  routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/Projects') },
-  { path: '/projects/:id',  routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/ProjectDetail') },
-  { path: routes.notFound,  routeType: 'public',    layout: 'app',  lazy: () => import('@/pages/NotFound') },
+  { path: routes.home,       routeType: 'public',    layout: 'app',  lazy: () => import('@/pages/Home') },
+  { path: routes.login,      routeType: 'auth',      layout: 'auth', lazy: () => import('@/pages/Login') },
+  { path: routes.register,   routeType: 'auth',      layout: 'auth', lazy: () => import('@/pages/Register') },
+  { path: routes.me,         routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/Me') },
+  { path: routes.dashboard,  routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/Dashboard') },
+  { path: routes.projects,   routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/Projects') },
+  { path: '/projects/:id',   routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/ProjectDetail') },
+  { path: routes.adminUsers, routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/AdminUsers') },
+  { path: routes.notFound,   routeType: 'public',    layout: 'app',  lazy: () => import('@/pages/NotFound') },
 ]

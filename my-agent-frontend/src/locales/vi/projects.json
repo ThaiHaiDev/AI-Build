@@ -67,7 +67,14 @@
     "already_member": "Đã là thành viên",
     "no_results": "Không tìm thấy user phù hợp.",
     "confirm_remove_title": "Gỡ thành viên khỏi dự án?",
-    "confirm_remove_body": "Bạn sắp gỡ {{name}} khỏi dự án này. Tiếp tục?"
+    "confirm_remove_body": "Bạn sắp gỡ {{name}} khỏi dự án này. Tiếp tục?",
+    "env_access_btn": "Sửa quyền env",
+    "env_access_modal_title": "Quyền môi trường của {{name}}",
+    "env_dev": "Dev",
+    "env_staging": "Staging",
+    "env_production": "Production",
+    "env_access_save": "Lưu",
+    "toast_env_access_updated": "Đã cập nhật quyền môi trường."
   },
   "archive": {
     "confirm_title": "Archive dự án?",

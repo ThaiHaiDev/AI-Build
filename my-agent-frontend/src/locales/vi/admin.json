@@ -1,0 +1,50 @@
+{
+  "title": "Quản lý người dùng",
+  "sub": "Quản lý toàn bộ tài khoản trong hệ thống.",
+  "filter": {
+    "role_all": "Tất cả vai trò",
+    "status_all": "Tất cả trạng thái",
+    "status_active": "Đang hoạt động",
+    "status_deactivated": "Đã vô hiệu"
+  },
+  "table": {
+    "name": "Tên",
+    "email": "Email",
+    "role": "Vai trò",
+    "status": "Trạng thái",
+    "created_at": "Ngày tạo",
+    "actions": "Thao tác"
+  },
+  "badge": {
+    "active": "Hoạt động",
+    "deactivated": "Đã vô hiệu"
+  },
+  "create_btn": "+ Tạo user",
+  "create_modal": {
+    "title": "Tạo user mới",
+    "email": "Email",
+    "name": "Họ và tên",
+    "password": "Mật khẩu",
+    "role": "Vai trò",
+    "submit": "Tạo user"
+  },
+  "change_role": {
+    "confirm_title": "Đổi vai trò?",
+    "confirm_body": "Đổi vai trò của {{name}} thành {{role}}?"
+  },
+  "deactivate": {
+    "btn": "Vô hiệu hoá",
+    "confirm_title": "Vô hiệu hoá tài khoản?",
+    "confirm_body": "{{name}} sẽ bị đăng xuất khỏi tất cả phiên ngay lập tức và không thể đăng nhập nữa."
+  },
+  "toast": {
+    "created": "Đã tạo user.",
+    "role_changed": "Đã cập nhật vai trò.",
+    "deactivated": "Đã vô hiệu hoá tài khoản."
+  },
+  "error": {
+    "email_duplicate": "Email này đã được sử dụng.",
+    "self_action": "Không thể thực hiện thao tác này trên tài khoản của chính bạn.",
+    "generic": "Đã có lỗi xảy ra, vui lòng thử lại."
+  }
+}

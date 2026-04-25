@@ -5,7 +5,6 @@ import { toast } from '@/components/ui/Toast'
 import { ConfirmDialog } from './ConfirmDialog'
 import { VaultFormModal } from './VaultFormModal'
 import { vaultService } from '../services/vaultService'
-import { ENVIRONMENTS } from '../types/project.types'
 import type { AccountsByEnv, TestAccount, CreateTestAccountInput, Environment } from '../types/project.types'
 
 interface Props {
@@ -65,8 +64,9 @@ function PasswordCell({ password }: { password: string }) {
 
 export function VaultTab({ projectId, canWrite }: Props) {
   const { t } = useTranslation('projects')
-  const [accounts, setAccounts] = useState<AccountsByEnv>({ dev: [], staging: [], production: [] })
-  const [loading, setLoading]   = useState(true)
+  const [accounts, setAccounts]       = useState<AccountsByEnv>({})
+  const [grantedEnvs, setGrantedEnvs] = useState<Environment[]>([])
+  const [loading, setLoading]         = useState(true)
   const [formOpen, setFormOpen] = useState(false)
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create')
   const [editing, setEditing]   = useState<TestAccount | null>(null)
@@ -78,7 +78,12 @@ export function VaultTab({ projectId, canWrite }: Props) {
     let cancel = false
     setLoading(true)
     vaultService.list(projectId)
-      .then((res: { data: { accounts: AccountsByEnv } }) => { if (!cancel) setAccounts(res.data.accounts) })
+      .then((res) => {
+        if (!cancel) {
+          setAccounts(res.data.accounts)
+          setGrantedEnvs(res.data.grantedEnvs)
+        }
+      })
       .catch(() => { if (!cancel) toast.error(t('vault.error_generic')) })
       .finally(() => { if (!cancel) setLoading(false) })
     return () => { cancel = true }
@@ -95,7 +100,7 @@ export function VaultTab({ projectId, canWrite }: Props) {
         const a = res.data.account
         setAccounts((prev) => ({
           ...prev,
-          [a.environment]: [...prev[a.environment as Environment], a],
+          [a.environment]: [...(prev[a.environment as Environment] ?? []), a],
         }))
         toast.success(t('vault.toast_created'))
       } else if (editing) {
@@ -103,8 +108,8 @@ export function VaultTab({ projectId, canWrite }: Props) {
         const updated = res.data.account
         setAccounts((prev) => ({
           ...prev,
-          [editing.environment]: prev[editing.environment].filter((x: TestAccount) => x.id !== editing.id),
-          [updated.environment]: [...prev[updated.environment as Environment].filter((x: TestAccount) => x.id !== updated.id), updated],
+          [editing.environment]: (prev[editing.environment] ?? []).filter((x: TestAccount) => x.id !== editing.id),
+          [updated.environment]: [...(prev[updated.environment as Environment] ?? []).filter((x: TestAccount) => x.id !== updated.id), updated],
         }))
         toast.success(t('vault.toast_updated'))
       }
@@ -122,7 +127,7 @@ export function VaultTab({ projectId, canWrite }: Props) {
     try {
       await vaultService.remove(projectId, deleteTarget.id)
       const env = deleteTarget.environment
-      setAccounts((prev) => ({ ...prev, [env]: prev[env].filter((a) => a.id !== deleteTarget.id) }))
+      setAccounts((prev) => ({ ...prev, [env]: (prev[env] ?? []).filter((a: TestAccount) => a.id !== deleteTarget.id) }))
       toast.success(t('vault.toast_deleted'))
       setDeleteTarget(null)
     } catch {
@@ -138,7 +143,7 @@ export function VaultTab({ projectId, canWrite }: Props) {
 
   return (
     <div className="space-y-6">
-      {ENVIRONMENTS.map((env) => (
+      {grantedEnvs.map((env) => (
         <section key={env}>
           <div className="mb-2 flex items-center justify-between">
             <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
@@ -151,13 +156,13 @@ export function VaultTab({ projectId, canWrite }: Props) {
             )}
           </div>
 
-          {accounts[env].length === 0 ? (
+          {(accounts[env] ?? []).length === 0 ? (
             <p className="rounded border border-dashed border-gray-200 px-4 py-3 text-sm text-gray-400">
               {t('vault.empty_env')}
             </p>
           ) : (
             <ul className="divide-y divide-gray-100 rounded border border-gray-200 bg-white">
-              {accounts[env].map((a) => (
+              {(accounts[env] ?? []).map((a) => (
                 <li key={a.id} className="px-4 py-3">
                   <div className="flex items-start justify-between gap-2">
                     <p className="text-sm font-medium text-gray-900">{a.label}</p>

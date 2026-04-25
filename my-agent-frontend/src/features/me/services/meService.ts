@@ -1,11 +1,10 @@
-export interface ProfileUpdate {
-  name?: string;
-  team?: string;
-  manager?: string;
-}
+import api from '@/services/rest/api'
+import { ENDPOINTS } from '@/services/rest/endpoints'
 
 export const meService = {
-  updateProfile: async (_data: ProfileUpdate): Promise<void> => {
-    await new Promise((r) => setTimeout(r, 400));
-  },
-};
+  updateName: (name: string) =>
+    api.patch<{ user: { id: string; name: string } }>(ENDPOINTS.AUTH.ME, { name }),
+
+  changePassword: (currentPassword: string, newPassword: string) =>
+    api.patch<{ ok: true }>(ENDPOINTS.AUTH.ME_PASSWORD, { currentPassword, newPassword }),
+}

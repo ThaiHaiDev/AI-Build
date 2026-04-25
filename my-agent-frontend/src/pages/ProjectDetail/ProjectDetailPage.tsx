@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/Button'
+import { Modal } from '@/components/ui/Modal'
 import { toast } from '@/components/ui/Toast'
 import { ROLES, isAtLeast } from '@/shared/constants/roles'
 import { useAuthStore } from '@/features/auth/store/authStore'
@@ -12,7 +13,14 @@ import { ProjectFormModal } from '@/features/projects/components/ProjectFormModa
 import { AddMemberModal } from '@/features/projects/components/AddMemberModal'
 import { ConfirmDialog } from '@/features/projects/components/ConfirmDialog'
 import { VaultTab } from '@/features/projects/components/VaultTab'
-import type { Project, ProjectMember } from '@/features/projects/types/project.types'
+import type { Project, ProjectMember, Environment } from '@/features/projects/types/project.types'
+
+const ALL_ENVS: Environment[] = ['dev', 'staging', 'production']
+const ENV_COLOR: Record<Environment, string> = {
+  dev:        'bg-blue-100 text-blue-700',
+  staging:    'bg-yellow-100 text-yellow-700',
+  production: 'bg-red-100 text-red-700',
+}
 
 type Tab = 'overview' | 'members' | 'vault'
 
@@ -35,6 +43,9 @@ export default function ProjectDetailPage() {
   const [archiveLoading, setArchiveLoading] = useState(false)
   const [removeTarget, setRemoveTarget]     = useState<ProjectMember | null>(null)
   const [removeLoading, setRemoveLoading]   = useState(false)
+  const [envTarget, setEnvTarget]           = useState<ProjectMember | null>(null)
+  const [envSelection, setEnvSelection]     = useState<Environment[]>([])
+  const [envSaving, setEnvSaving]           = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -113,6 +124,28 @@ export default function ProjectDetailPage() {
       else toast.error(t('error.generic'))
     } finally {
       setArchiveLoading(false)
+    }
+  }
+
+  const openEnvModal = (m: ProjectMember) => {
+    setEnvTarget(m)
+    setEnvSelection(m.allowedEnvs as Environment[])
+  }
+
+  const runEnvSave = async () => {
+    if (!envTarget || !id) return
+    setEnvSaving(true)
+    try {
+      const res = await projectService.updateEnvAccess(id, envTarget.id, envSelection)
+      setMembers((prev) =>
+        prev.map((m) => m.id === envTarget.id ? { ...m, allowedEnvs: res.data.member.allowedEnvs } : m),
+      )
+      toast.success(t('members.toast_env_access_updated'))
+      setEnvTarget(null)
+    } catch {
+      toast.error(t('error.generic'))
+    } finally {
+      setEnvSaving(false)
     }
   }
 
@@ -202,20 +235,36 @@ export default function ProjectDetailPage() {
           ) : (
             <ul className="divide-y divide-gray-100">
               {members.map((m) => (
-                <li key={m.id} className="flex items-center justify-between py-3">
-                  <div className="min-w-0">
+                <li key={m.id} className="flex items-center justify-between gap-2 py-3">
+                  <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-gray-900">{m.name}</p>
                     <p className="truncate text-xs text-gray-500">{m.email} · {m.role}</p>
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {(m.allowedEnvs as Environment[]).map((env) => (
+                        <span key={env} className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${ENV_COLOR[env]}`}>
+                          {env}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                   {canMutate && !archived && (
-                    <Button
-                      variant="ghost"
-                      className="text-red-600 hover:bg-red-50"
-                      onClick={() => setRemoveTarget(m)}
-                      aria-label={t('members.remove')}
-                    >
-                      ×
-                    </Button>
+                    <div className="flex shrink-0 gap-1">
+                      <Button
+                        variant="ghost"
+                        className="text-xs px-2 py-1 text-gray-600"
+                        onClick={() => openEnvModal(m)}
+                      >
+                        {t('members.env_access_btn')}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="text-red-600 hover:bg-red-50"
+                        onClick={() => setRemoveTarget(m)}
+                        aria-label={t('members.remove')}
+                      >
+                        ×
+                      </Button>
+                    </div>
                   )}
                 </li>
               ))}
@@ -262,6 +311,44 @@ export default function ProjectDetailPage() {
         onConfirm={runRemove}
         onCancel={() => setRemoveTarget(null)}
       />
+
+      <Modal open={!!envTarget} onClose={() => setEnvTarget(null)}>
+        <div className="w-80 max-w-full">
+          <h2 className="mb-4 text-base font-semibold text-gray-900">
+            {t('members.env_access_modal_title', { name: envTarget?.name ?? '' })}
+          </h2>
+          <div className="space-y-2">
+            {ALL_ENVS.map((env) => (
+              <label key={env} className="flex cursor-pointer items-center gap-2 text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={envSelection.includes(env)}
+                  onChange={() =>
+                    setEnvSelection((prev) =>
+                      prev.includes(env) ? prev.filter((e) => e !== env) : [...prev, env],
+                    )
+                  }
+                  className="h-4 w-4 rounded border-gray-300 accent-blue-600"
+                />
+                <span className={`rounded px-2 py-0.5 text-xs font-medium ${ENV_COLOR[env]}`}>{env}</span>
+              </label>
+            ))}
+          </div>
+          <div className="mt-5 flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setEnvTarget(null)}>
+              {t('action.cancel')}
+            </Button>
+            <Button
+              variant="primary"
+              disabled={envSaving || envSelection.length === 0}
+              loading={envSaving}
+              onClick={runEnvSave}
+            >
+              {t('members.env_access_save')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

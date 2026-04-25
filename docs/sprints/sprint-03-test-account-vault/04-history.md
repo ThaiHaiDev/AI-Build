@@ -71,3 +71,38 @@
 - Cần test thực tế trên browser (Node version trên máy quá cũ để chạy Vite build check)
 - Track B (Test Account Vault UI) chờ BE API hoàn thành
 - Sprint-04 sẽ dùng MePage edit flow cho User Management
+
+---
+
+## 2026-04-25 · BE Track — Test Account Vault API (B10–B30)
+
+**Outcome**: Implement toàn bộ backend API cho Test Account Vault.
+
+### B10 — TestAccount Model
+- `src/database/models/TestAccount.ts` (NEW) — Sequelize model, table `test_accounts`, fields: id/projectId/environment(ENUM)/label/username/password/url/note/createdBy, index `(project_id, environment)`
+- `src/database/models/index.ts` — export `TestAccount`, `Environment`, `ENVIRONMENTS`
+
+### B11 — testAccountStore
+- `src/projects/stores/testAccountStore.ts` (NEW) — store với `TestAccountRecord`/`CreateTestAccountInput`/`UpdateTestAccountInput`, methods: `findByProject`, `findById`, `create`, `update`, `remove` (hard delete)
+
+### B12 — Seed Data
+- `src/projects/stores/seedDemoProjects.ts` — thêm seed 3 demo accounts cho Project Alpha (dev/staging/production), only when count === 0
+
+### B13 — Middleware
+- `src/projects/middlewares/requireAccountAccess.ts` (NEW) — check project exists + active membership; SA → memberRole='admin'; ADMIN role member → 'admin'; others → 'user'
+- `src/auth/types.ts` — extend Express.Request với `memberRole?: 'admin' | 'user'`
+
+### B20–B24 — Controller & Routes
+- `src/projects/schemas/testAccount.schema.ts` (NEW) — Zod schemas: `createTestAccountSchema`, `updateTestAccountSchema`
+- `src/projects/controllers/TestAccountController.ts` (NEW) — list (grouped by env), getById, create, update, remove
+- `src/projects/middlewares/accountRateLimiter.ts` (NEW) — `accountWriteLimiter` 20 req/min per IP+user
+- `src/projects/routes.ts` — 5 account endpoints dưới `requireAccountAccess`
+
+### B30 — Pino Redaction
+- `src/lib/logger.ts` — `'*.password'` đã có sẵn trong redact paths → không cần thay đổi
+
+**TypeScript**: `tsc --noEmit` pass clean (0 errors).
+
+**Follow-up**:
+- B40–B43: Integration tests chưa implement (cần real `aiTest` Postgres)
+- Track FE-B (Vault UI) có thể bắt đầu — endpoints đã sẵn sàng

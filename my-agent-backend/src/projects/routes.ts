@@ -4,8 +4,11 @@ import { requireRole } from '../auth/middlewares/requireRole.js';
 import { ROLES } from '../auth/constants.js';
 import { ProjectController } from './controllers/ProjectController.js';
 import { UserController } from './controllers/UserController.js';
+import { TestAccountController } from './controllers/TestAccountController.js';
 import { requireProjectAccess } from './middlewares/requireProjectAccess.js';
+import { requireAccountAccess } from './middlewares/requireAccountAccess.js';
 import { projectWriteLimiter } from './middlewares/projectRateLimiter.js';
+import { accountWriteLimiter } from './middlewares/accountRateLimiter.js';
 
 export const projectsRouter = Router();
 
@@ -28,3 +31,10 @@ projectsRouter.delete('/projects/:id/members/:userId', superAdmin, ProjectContro
 
 // Users (search for add-member modal)
 projectsRouter.get('/users', superAdmin, UserController.search);
+
+// Test Accounts
+projectsRouter.get('/projects/:id/accounts', requireAccountAccess, TestAccountController.list);
+projectsRouter.get('/projects/:id/accounts/:accountId', requireAccountAccess, TestAccountController.getById);
+projectsRouter.post('/projects/:id/accounts', requireAccountAccess, accountWriteLimiter, TestAccountController.create);
+projectsRouter.patch('/projects/:id/accounts/:accountId', requireAccountAccess, TestAccountController.update);
+projectsRouter.delete('/projects/:id/accounts/:accountId', requireAccountAccess, TestAccountController.remove);

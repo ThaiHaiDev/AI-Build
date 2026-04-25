@@ -30,6 +30,7 @@ declare global {
   namespace Express {
     interface Request {
       user?: AuthUser & { jti: string };
+      memberRole?: 'admin' | 'user';
     }
   }
 }

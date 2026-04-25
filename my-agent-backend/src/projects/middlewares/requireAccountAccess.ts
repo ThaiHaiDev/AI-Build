@@ -20,6 +20,8 @@ export const requireAccountAccess: RequestHandler = async (req, _res, next) => {
     const project = await projectStore.findById(projectId);
     if (!project) throw new NotFoundError('Project not found');
 
+    req.projectName = project.name;
+
     if (req.user.role === ROLES.SUPER_ADMIN) {
       req.memberRole = 'admin';
       req.memberEnvs = [...ALL_ENVS];

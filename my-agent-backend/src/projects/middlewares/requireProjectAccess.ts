@@ -13,6 +13,8 @@ export const requireProjectAccess: RequestHandler = async (req, _res, next) => {
     const project = await projectStore.findById(projectId);
     if (!project) throw new NotFoundError('Project not found');
 
+    req.projectName = project.name;
+
     if (req.user.role === ROLES.SUPER_ADMIN) return next();
 
     const ok = await projectMemberStore.isActiveMember(projectId, req.user.id);

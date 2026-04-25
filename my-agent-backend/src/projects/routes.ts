@@ -5,6 +5,7 @@ import { ROLES } from '../auth/constants.js';
 import { ProjectController } from './controllers/ProjectController.js';
 import { UserController } from './controllers/UserController.js';
 import { TestAccountController } from './controllers/TestAccountController.js';
+import { HistoryController } from './controllers/HistoryController.js';
 import { requireProjectAccess } from './middlewares/requireProjectAccess.js';
 import { requireAccountAccess } from './middlewares/requireAccountAccess.js';
 import { projectWriteLimiter } from './middlewares/projectRateLimiter.js';
@@ -32,6 +33,9 @@ projectsRouter.patch('/projects/:id/members/:memberId/env-access', requireProjec
 
 // Users (search for add-member modal)
 projectsRouter.get('/users', superAdmin, UserController.search);
+
+// History
+projectsRouter.get('/projects/:id/history', requireProjectAccess, HistoryController.listByProject);
 
 // Test Accounts
 projectsRouter.get('/projects/:id/accounts', requireAccountAccess, TestAccountController.list);

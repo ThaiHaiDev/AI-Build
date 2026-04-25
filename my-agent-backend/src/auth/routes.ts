@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { AuthController } from './controllers/AuthController.js';
 import { AdminController } from './controllers/AdminController.js';
 import { MeController } from './controllers/MeController.js';
+import { HistoryController } from '../projects/controllers/HistoryController.js';
 import { requireAuth } from './middlewares/requireAuth.js';
 import { requireRole } from './middlewares/requireRole.js';
 import { ROLES } from './constants.js';
@@ -22,6 +23,7 @@ authRouter.patch('/me',          requireAuth, MeController.updateName);
 authRouter.patch('/me/password', requireAuth, MeController.changePassword);
 
 // Admin — user management (SA only)
+authRouter.get   ('/admin/history',                 requireAuth, superAdmin, HistoryController.listGlobal);
 authRouter.get   ('/admin/users',                   requireAuth, superAdmin, AdminController.listUsers);
 authRouter.post  ('/admin/users',                   requireAuth, superAdmin, AdminController.createUser);
 authRouter.patch ('/admin/users/:userId/role',       requireAuth, superAdmin, AdminController.changeRole);

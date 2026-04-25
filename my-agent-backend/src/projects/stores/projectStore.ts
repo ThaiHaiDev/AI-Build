@@ -111,17 +111,30 @@ export const projectStore = {
   async listForUser(
     userId: string,
     role: Role,
-    opts: { includeArchived?: boolean } = {},
+    opts: { includeArchived?: boolean; search?: string } = {},
   ): Promise<ProjectRecord[]> {
-    const statusFilter = opts.includeArchived ? {} : { status: 'active' as ProjectStatus };
+    const where: import('sequelize').WhereOptions = opts.includeArchived ? {} : { status: 'active' as ProjectStatus };
+
+    if (opts.search) {
+      const term = `%${opts.search}%`;
+      (where as Record<string, unknown>)[Op.and as unknown as string] = [
+        {
+          [Op.or]: [
+            { name:        { [Op.iLike]: term } },
+            { techStack:   { [Op.iLike]: term } },
+            { partnerName: { [Op.iLike]: term } },
+          ],
+        },
+      ];
+    }
 
     if (role === ROLES.SUPER_ADMIN) {
-      const rows = await Project.findAll({ where: statusFilter, order: [['created_at', 'DESC']] });
+      const rows = await Project.findAll({ where, order: [['created_at', 'DESC']] });
       return rows.map(toRecord);
     }
 
     const rows = await Project.findAll({
-      where: statusFilter,
+      where,
       include: [{
         model: ProjectMember,
         as: 'members',

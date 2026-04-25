@@ -5,6 +5,7 @@ import { testAccountStore } from '../stores/testAccountStore.js';
 import { createTestAccountSchema, updateTestAccountSchema } from '../schemas/testAccount.schema.js';
 import { ALL_ENVS, type Environment } from '../../database/models/ProjectMember.js';
 import type { TestAccountRecord } from '../stores/testAccountStore.js';
+import { historyStore } from '../stores/historyStore.js';
 
 function groupByEnv(
   accounts: TestAccountRecord[],
@@ -52,6 +53,17 @@ export const TestAccountController = {
     const body = createTestAccountSchema.parse(req.body);
     assertEnvAccess(req, body.environment);
     const account = await testAccountStore.create({ projectId: req.params.id!, ...body }, req.user.id);
+    historyStore.append({
+      actorId:      req.user.id,
+      actorName:    req.user.email,
+      actorEmail:   req.user.email,
+      action:       'create',
+      resourceType: 'test_account',
+      resourceId:   account.id,
+      resourceName: account.label,
+      projectId:    req.params.id,
+      projectName:  req.projectName ?? null,
+    });
     res.status(201).json({ account });
   }),
 
@@ -64,6 +76,18 @@ export const TestAccountController = {
     const body = updateTestAccountSchema.parse(req.body);
     if (body.environment) assertEnvAccess(req, body.environment);
     const account = await testAccountStore.update(req.params.accountId!, body);
+    historyStore.append({
+      actorId:      req.user.id,
+      actorName:    req.user.email,
+      actorEmail:   req.user.email,
+      action:       'update',
+      resourceType: 'test_account',
+      resourceId:   existing.id,
+      resourceName: existing.label,
+      projectId:    req.params.id,
+      projectName:  req.projectName ?? null,
+      meta: { before: { label: existing.label, environment: existing.environment }, after: body },
+    });
     res.json({ account });
   }),
 
@@ -74,6 +98,17 @@ export const TestAccountController = {
     if (!existing || existing.projectId !== req.params.id) throw new NotFoundError('Test account not found');
     assertEnvAccess(req, existing.environment);
     await testAccountStore.remove(req.params.accountId!);
+    historyStore.append({
+      actorId:      req.user.id,
+      actorName:    req.user.email,
+      actorEmail:   req.user.email,
+      action:       'delete',
+      resourceType: 'test_account',
+      resourceId:   existing.id,
+      resourceName: existing.label,
+      projectId:    req.params.id,
+      projectName:  req.projectName ?? null,
+    });
     res.status(204).send();
   }),
 };

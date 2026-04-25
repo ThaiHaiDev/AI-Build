@@ -62,10 +62,17 @@ export const userStore = {
     return toRecord(u);
   },
 
-  async listAll(opts: { role?: Role; isActive?: boolean } = {}): Promise<UserListItem[]> {
+  async listAll(opts: { role?: Role; isActive?: boolean; search?: string } = {}): Promise<UserListItem[]> {
     const where: Record<string, unknown> = {};
     if (opts.role !== undefined)     where.role     = opts.role;
     if (opts.isActive !== undefined) where.isActive = opts.isActive;
+    if (opts.search) {
+      const term = `%${opts.search}%`;
+      where[Op.or as unknown as string] = [
+        { name:  { [Op.iLike]: term } },
+        { email: { [Op.iLike]: term } },
+      ];
+    }
     const rows = await User.findAll({ where, order: [['created_at', 'ASC']] });
     return rows.map(toListItem);
   },

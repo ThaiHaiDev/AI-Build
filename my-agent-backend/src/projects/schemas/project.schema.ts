@@ -38,6 +38,7 @@ export const envAccessSchema = z.object({
 
 export const listProjectsQuerySchema = z.object({
   includeArchived: z.enum(['true', 'false']).optional(),
+  search:          z.string().trim().min(1).max(100).optional(),
 });
 
 export const searchUsersQuerySchema = z.object({

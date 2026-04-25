@@ -32,6 +32,7 @@ declare global {
       user?: AuthUser & { jti: string };
       memberRole?: 'admin' | 'user';
       memberEnvs?: string[];
+      projectName?: string;
     }
   }
 }

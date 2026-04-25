@@ -6,6 +6,7 @@ const MANAGEABLE_ROLES = [ROLES.USER, ROLES.ADMIN, ROLES.SUPER_ADMIN] as const;
 export const listUsersQuerySchema = z.object({
   role:     z.enum([ROLES.USER, ROLES.ADMIN, ROLES.SUPER_ADMIN]).optional(),
   isActive: z.enum(['true', 'false']).optional(),
+  search:   z.string().trim().min(1).max(100).optional(),
 });
 
 export const createUserSchema = z.object({

@@ -106,3 +106,40 @@
 **Follow-up**:
 - B40–B43: Integration tests chưa implement (cần real `aiTest` Postgres)
 - Track FE-B (Vault UI) có thể bắt đầu — endpoints đã sẵn sàng
+
+---
+
+## 2026-04-25 · FE Track B — Test Account Vault UI (F10–F57)
+
+**Outcome**: Implement toàn bộ UI cho Test Account Vault. Tab mới trên trang ProjectDetail.
+
+### Các thay đổi chính
+
+**Types & Service**
+- `src/features/projects/types/project.types.ts` — thêm `TestAccount`, `AccountsByEnv`, `Environment`, `ENVIRONMENTS`, `CreateTestAccountInput`, `UpdateTestAccountInput`
+- `src/features/projects/services/vaultService.ts` (NEW) — `list`, `create`, `update`, `remove`
+- `src/services/rest/endpoints.ts` — thêm `ACCOUNTS(id)` và `ACCOUNT(id, accountId)`
+
+**Components**
+- `src/features/projects/components/VaultFormModal.tsx` (NEW) — modal tạo/sửa tài khoản; react-hook-form + Zod; fields: environment, label, username, password, url, note
+- `src/features/projects/components/VaultTab.tsx` (NEW) — tab hiển thị accounts nhóm theo env; `CopyButton` (clipboard + toast fallback); `PasswordCell` (reveal/hide toggle); nút Add/Edit/Delete (canWrite gate)
+
+**Page update**
+- `src/pages/ProjectDetail/ProjectDetailPage.tsx` — thêm tab `'vault'`; import `VaultTab`; `canWriteVault = isSuperAdmin || isAtLeast(role, ADMIN)`; vault tab ẩn nút write khi project archived
+
+**i18n**
+- `src/locales/en/projects.json`, `src/locales/vi/projects.json` — thêm section `vault.*` (28 keys mỗi file) và key `detail.tab_vault`
+
+**TypeScript**: `tsc --noEmit` pass clean.
+
+**Test thực tế**:
+- GET accounts (SA) → 3 seed accounts grouped by env ✅
+- POST create → 201 ✅
+- PATCH update → 200 ✅
+- DELETE → 204 ✅
+- GET as USER member → read-only ✅
+
+**Follow-up**:
+- B40–B43: Integration tests (cần Postgres aiTest)
+- FE: test clipboard API trên browser thực tế
+- Sprint-04 User Management sẽ dùng lại pattern VaultTab/VaultFormModal

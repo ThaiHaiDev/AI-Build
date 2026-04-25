@@ -20,6 +20,7 @@
   "detail": {
     "tab_overview": "Overview",
     "tab_members": "Members",
+    "tab_vault": "Test Accounts",
     "description": "Description",
     "tech_stack": "Tech stack",
     "partner": "Partner",
@@ -92,5 +93,38 @@
   "action": {
     "confirm": "Confirm",
     "cancel": "Cancel"
+  },
+  "vault": {
+    "title": "Test Accounts",
+    "add": "+ Add test account",
+    "edit": "Edit",
+    "delete": "Delete",
+    "empty_env": "No test accounts for this environment.",
+    "env_dev": "Dev",
+    "env_staging": "Staging",
+    "env_production": "Production",
+    "field_label": "Label",
+    "field_label_ph": "e.g. Test Admin",
+    "field_env": "Environment",
+    "field_username": "Username",
+    "field_username_ph": "e.g. admin@dev.local",
+    "field_password": "Password",
+    "field_url": "URL (optional)",
+    "field_url_ph": "https://",
+    "field_note": "Note (optional)",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "copy_fail": "Cannot copy. Please copy manually.",
+    "reveal": "Show",
+    "hide": "Hide",
+    "modal_title_create": "Add test account",
+    "modal_title_edit": "Edit test account",
+    "confirm_delete_title": "Delete test account?",
+    "confirm_delete_body": "\"{{label}}\" will be permanently deleted. This cannot be undone.",
+    "toast_created": "Test account added.",
+    "toast_updated": "Test account updated.",
+    "toast_deleted": "Test account deleted.",
+    "error_forbidden": "Only admins can modify test accounts.",
+    "error_generic": "Something went wrong. Please try again."
   }
 }

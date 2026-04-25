@@ -20,7 +20,9 @@ export const ENDPOINTS = {
     UPDATE:    (id: string) => `/projects/${id}`,
     ARCHIVE:   (id: string) => `/projects/${id}/archive`,
     UNARCHIVE: (id: string) => `/projects/${id}/unarchive`,
-    MEMBERS:   (id: string) => `/projects/${id}/members`,
-    MEMBER:    (id: string, userId: string) => `/projects/${id}/members/${userId}`,
+    MEMBERS:      (id: string) => `/projects/${id}/members`,
+    MEMBER:       (id: string, userId: string) => `/projects/${id}/members/${userId}`,
+    ACCOUNTS:     (id: string) => `/projects/${id}/accounts`,
+    ACCOUNT:      (id: string, accountId: string) => `/projects/${id}/accounts/${accountId}`,
   },
 } as const

@@ -46,3 +46,35 @@ export interface CreateProjectInput {
 }
 
 export type UpdateProjectInput = Partial<CreateProjectInput>
+
+// --- Test Account Vault ---
+
+export type Environment = 'dev' | 'staging' | 'production'
+export const ENVIRONMENTS: Environment[] = ['dev', 'staging', 'production']
+
+export interface TestAccount {
+  id:          string
+  projectId:   string
+  environment: Environment
+  label:       string
+  username:    string
+  password:    string
+  url:         string | null
+  note:        string | null
+  createdBy:   string
+  createdAt:   string
+  updatedAt:   string
+}
+
+export type AccountsByEnv = Record<Environment, TestAccount[]>
+
+export interface CreateTestAccountInput {
+  environment: Environment
+  label:       string
+  username:    string
+  password:    string
+  url?:        string | null
+  note?:       string | null
+}
+
+export type UpdateTestAccountInput = Partial<CreateTestAccountInput>

@@ -3,7 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/Button'
 import { toast } from '@/components/ui/Toast'
-import { ROLES } from '@/shared/constants/roles'
+import { ROLES, isAtLeast } from '@/shared/constants/roles'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { routes } from '@/router/routes'
 import { projectService } from '@/features/projects/services/projectService'
@@ -11,16 +11,18 @@ import { parseProjectError } from '@/features/projects/utils/parseProjectError'
 import { ProjectFormModal } from '@/features/projects/components/ProjectFormModal'
 import { AddMemberModal } from '@/features/projects/components/AddMemberModal'
 import { ConfirmDialog } from '@/features/projects/components/ConfirmDialog'
+import { VaultTab } from '@/features/projects/components/VaultTab'
 import type { Project, ProjectMember } from '@/features/projects/types/project.types'
 
-type Tab = 'overview' | 'members'
+type Tab = 'overview' | 'members' | 'vault'
 
 export default function ProjectDetailPage() {
   const { t }    = useTranslation('projects')
   const { id }   = useParams<{ id: string }>()
   const navigate = useNavigate()
   const user     = useAuthStore((s) => s.user)
-  const isSuperAdmin = user?.role === ROLES.SUPER_ADMIN
+  const isSuperAdmin  = user?.role === ROLES.SUPER_ADMIN
+  const canWriteVault = isSuperAdmin || isAtLeast(user?.role, ROLES.ADMIN)
 
   const [project, setProject]       = useState<Project | null>(null)
   const [members, setMembers]       = useState<ProjectMember[]>([])
@@ -161,7 +163,7 @@ export default function ProjectDetailPage() {
       </header>
 
       <nav className="mb-4 flex gap-2 border-b border-gray-200">
-        {(['overview', 'members'] as Tab[]).map((k) => (
+        {(['overview', 'members', 'vault'] as Tab[]).map((k) => (
           <button
             key={k}
             onClick={() => setTab(k)}
@@ -169,7 +171,7 @@ export default function ProjectDetailPage() {
               tab === k ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            {t(k === 'overview' ? 'detail.tab_overview' : 'detail.tab_members')}
+            {t(k === 'overview' ? 'detail.tab_overview' : k === 'members' ? 'detail.tab_members' : 'detail.tab_vault')}
           </button>
         ))}
       </nav>
@@ -220,6 +222,10 @@ export default function ProjectDetailPage() {
             </ul>
           )}
         </div>
+      )}
+
+      {tab === 'vault' && (
+        <VaultTab projectId={project.id} canWrite={canWriteVault && !archived} />
       )}
 
       <ProjectFormModal

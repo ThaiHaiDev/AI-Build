@@ -20,6 +20,7 @@
   "detail": {
     "tab_overview": "Tổng quan",
     "tab_members": "Thành viên",
+    "tab_vault": "Tài khoản test",
     "description": "Mô tả",
     "tech_stack": "Tech stack",
     "partner": "Đối tác",
@@ -92,5 +93,38 @@
   "action": {
     "confirm": "Xác nhận",
     "cancel": "Huỷ"
+  },
+  "vault": {
+    "title": "Tài khoản test",
+    "add": "+ Thêm tài khoản",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "empty_env": "Môi trường này chưa có tài khoản test.",
+    "env_dev": "Dev",
+    "env_staging": "Staging",
+    "env_production": "Production",
+    "field_label": "Nhãn",
+    "field_label_ph": "VD: Test Admin",
+    "field_env": "Môi trường",
+    "field_username": "Username",
+    "field_username_ph": "VD: admin@dev.local",
+    "field_password": "Mật khẩu",
+    "field_url": "URL (tuỳ chọn)",
+    "field_url_ph": "https://",
+    "field_note": "Ghi chú (tuỳ chọn)",
+    "copy": "Copy",
+    "copied": "Đã sao chép!",
+    "copy_fail": "Không thể sao chép. Hãy copy thủ công.",
+    "reveal": "Hiện",
+    "hide": "Ẩn",
+    "modal_title_create": "Thêm tài khoản test",
+    "modal_title_edit": "Sửa tài khoản test",
+    "confirm_delete_title": "Xóa tài khoản test?",
+    "confirm_delete_body": "\"{{label}}\" sẽ bị xóa vĩnh viễn. Không thể hoàn tác.",
+    "toast_created": "Đã thêm tài khoản test.",
+    "toast_updated": "Đã cập nhật tài khoản test.",
+    "toast_deleted": "Đã xóa tài khoản test.",
+    "error_forbidden": "Chỉ admin mới có thể thao tác tài khoản test.",
+    "error_generic": "Đã có lỗi xảy ra, vui lòng thử lại."
   }
 }

@@ -12,11 +12,11 @@ Mô tả luồng nghiệp vụ dưới dạng narrative. Không bao gồm chi ti
 
 1. Công ty tuyển 1 dev mới, tên là An, được assign vào 2 dự án đang chạy: `Project Alpha` và `Project Beta`.
 2. Super Admin vào hệ thống, tạo tài khoản cho An (email, tên, role = `USER`).
-3. Super Admin mở `Project Alpha` → thêm An vào danh sách member. Lặp lại với `Project Beta`.
+3. Super Admin mở `Project Alpha` → thêm An vào danh sách member, giữ default `allowedEnvs = ['dev']`. Lặp lại với `Project Beta`.
 4. An nhận thông tin tài khoản → login lần đầu → thấy dashboard có 2 dự án.
 5. An click vào `Project Alpha` → thấy:
    - Mô tả dự án, tech stack, đối tác
-   - Danh sách account test 3 môi trường (dev/staging/production)
+   - Danh sách account test **chỉ section Dev** (staging/production ẩn vì chưa được cấp quyền)
    - Danh sách member của dự án
 6. An copy account test dev → tự login vào hệ thống của Project Alpha → bắt đầu làm việc.
 
@@ -94,6 +94,35 @@ Mô tả luồng nghiệp vụ dưới dạng narrative. Không bao gồm chi ti
 4. User liên hệ Super Admin để được add vào dự án phù hợp.
 
 **Outcome**: Có account nhưng chưa thấy gì cho đến khi được assign.
+
+---
+
+## Flow H — Super Admin gán env access khi thêm member
+
+**Actor**: Super Admin
+
+1. Super Admin thêm nhân viên mới (role `USER`) vào `Project Alpha`.
+2. Trong form thêm member, có checkbox chọn môi trường được xem: **Dev / Staging / Production** (mặc định chỉ tick Dev).
+3. Super Admin giữ nguyên default → member được add với `allowedEnvs = ['dev']`.
+4. Member login, vào tab "Tài khoản test" → chỉ thấy section Dev. Section Staging và Production không xuất hiện.
+
+**Outcome**: Production account không lộ cho member không liên quan.
+
+---
+
+## Flow I — Admin mở thêm quyền xem staging cho member
+
+**Actor**: Admin (Dev Lead của dự án)
+
+1. QC mới được assign vào dự án, ban đầu chỉ có `allowedEnvs = ['dev']`.
+2. Sau 1 tuần onboard, QC cần test trên staging.
+3. Admin vào tab "Thành viên" của dự án → tìm QC → click "Sửa quyền env".
+4. Tick thêm checkbox **Staging** → save.
+5. QC vào lại tab "Tài khoản test" → thấy thêm section Staging.
+
+**Lưu ý**: Admin chỉ có thể grant env mình đang có. Nếu Admin chỉ có `['dev', 'staging']` thì không thể grant Production cho QC — phải nhờ Super Admin.
+
+**Outcome**: Quyền xem env được điều chỉnh linh hoạt theo tiến độ, không cần qua Super Admin cho mọi thay đổi nhỏ.
 
 ---
 

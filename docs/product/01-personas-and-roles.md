@@ -22,6 +22,7 @@
   - Xem thông tin dự án mình được gán
   - Xem và cập nhật account test của các dự án mình phụ trách (khi QC báo đổi password, khi thêm account mới)
   - Xem danh sách member trong dự án
+  - Gán / điều chỉnh env access (`allowedEnvs`) cho từng member trong dự án mình phụ trách
 
 ### 3. User — Nhân viên / Developer / QC
 
@@ -29,7 +30,7 @@
 - **Mục tiêu**: có đủ thông tin để làm việc mà không cần đi hỏi ai
 - **Việc hay làm**:
   - Login → xem các dự án mình được assign
-  - Vào 1 dự án → xem account test 3 môi trường + thông tin dự án
+  - Vào 1 dự án → xem account test theo các môi trường được cấp quyền + thông tin dự án
   - Copy account để dùng cho việc test/dev
 
 ## Role mapping trong hệ thống
@@ -57,15 +58,30 @@ Lưu ý: cột "Admin (in project)" và "User (in project)" chỉ áp dụng cho
 | Gán / gỡ member vào dự án | ✅ | ❌ (phase 1) | ❌ |
 | Xem danh sách dự án | ✅ all | ✅ assigned only | ✅ assigned only |
 | Xem chi tiết dự án | ✅ all | ✅ assigned | ✅ assigned |
-| Xem account test | ✅ all | ✅ assigned | ✅ assigned |
-| Thêm / sửa account test | ✅ | ✅ (phase 1 mở) | ❌ |
-| Xóa account test | ✅ | ✅ (phase 1 mở) | ❌ |
+| Xem account test | ✅ all envs | ✅ chỉ `allowedEnvs` của mình | ✅ chỉ `allowedEnvs` của mình |
+| Thêm / sửa account test | ✅ any env | ✅ trong `allowedEnvs` (phase 1) | ❌ |
+| Xóa account test | ✅ any env | ✅ trong `allowedEnvs` (phase 1) | ❌ |
+| Gán `allowedEnvs` cho member | ✅ | ✅ (không vượt env của mình) | ❌ |
 | Tạo user mới | ✅ | ❌ | ❌ |
 | Đổi role user | ✅ | ❌ | ❌ |
 | Deactivate user | ✅ | ❌ | ❌ |
 | Xem danh sách toàn bộ user | ✅ | ❌ | ❌ |
 
+## Env-level permission — Account Vault
+
+Ngoài phân quyền theo role, mỗi member trong dự án còn có **`allowedEnvs`** — danh sách môi trường được phép xem account test trong dự án đó.
+
+| Điều kiện | Giá trị |
+|---|---|
+| Default khi add member mới | `['dev']` — chỉ xem dev |
+| Có thể grant thêm | `staging`, `production` do SA hoặc Admin phụ trách cấp |
+| Super Admin | Luôn thấy cả 3 env, không bị ràng buộc bởi `allowedEnvs` |
+| Admin grant cho member | Chỉ grant tối đa những env Admin đó đang có |
+
+**Nguyên tắc**: member thấy env nào → thao tác được trong env đó (nếu role cho phép). Section env không có quyền bị **ẩn hoàn toàn** trên UI — không hiện thông báo "bạn không có quyền".
+
 ## Ghi chú về phase 1
 
 - Việc cho Admin **được sửa account test** trong dự án mình phụ trách là quyết định phase 1 — thực tế QC hay báo đổi password, để Admin tự cập nhật cho nhanh thay vì phải gọi Super Admin.
+- **Env-level permission** (`allowedEnvs`) implement từ Sprint 04, là cơ chế kiểm soát production account nhạy cảm khỏi member không liên quan.
 - Phase 2 có thể tách quyền hơn: tạo role "Account Keeper" riêng hoặc cho phép Super Admin chỉ định ai trong project được edit account.

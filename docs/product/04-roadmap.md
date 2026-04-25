@@ -56,12 +56,13 @@ Chia theo sprint, mỗi sprint có 1 business outcome rõ ràng. Chi tiết task
 
 ---
 
-## Sprint 04 — User Management
+## Sprint 04 — User Management + Env-Level Permission
 
-**Outcome**: Super Admin quản lý được toàn bộ user trong hệ thống.
+**Outcome**: Super Admin quản lý được toàn bộ user trong hệ thống; đồng thời kiểm soát từng member chỉ xem được môi trường (dev/staging/production) phù hợp trong mỗi dự án.
 
 **Scope nghiệp vụ**:
 
+**Phần A — User Management**
 - Super Admin xem danh sách toàn bộ user, filter theo role / theo dự án
 - Super Admin tạo user mới (chỉ định role luôn)
 - Super Admin đổi role user (USER ↔ ADMIN ↔ SUPER_ADMIN)
@@ -69,10 +70,19 @@ Chia theo sprint, mỗi sprint có 1 business outcome rõ ràng. Chi tiết task
 - User deactivated bị logout forced ở mọi phiên; không login lại được
 - User thường xem và sửa thông tin cá nhân (tên, đổi password)
 
+**Phần B — Env-Level Permission (Account Vault)**
+- Thêm `allowedEnvs` vào `ProjectMember`: khi add member vào dự án, chọn env nào họ được xem (default chỉ `dev`)
+- SA/Admin chỉnh `allowedEnvs` của từng member bất kỳ lúc nào
+- `GET /projects/:id/accounts` lọc theo `allowedEnvs` — member chỉ thấy section env của mình; SA luôn thấy cả 3
+- Admin không thể grant env vượt quá quyền của chính mình
+- FE ẩn hoàn toàn section env không có quyền (không hiện "bạn không có quyền")
+
 **Demo criteria**:
 - Super Admin tạo user mới với role `ADMIN`.
 - Đổi role của 1 user từ `USER` lên `ADMIN` → user đó login lại thấy quyền mới.
 - Deactivate 1 user → user đó không login được nữa.
+- Add 1 member vào dự án với `allowedEnvs=['dev']` → họ chỉ thấy section Dev trong tab Tài khoản test, không thấy Staging/Production.
+- SA đổi `allowedEnvs` của member thêm `staging` → member vào lại thấy thêm section Staging.
 
 ---
 

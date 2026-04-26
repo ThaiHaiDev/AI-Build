@@ -292,3 +292,15 @@ Track C — UX Polish:
 - `src/shared/schemas/auth.schema.ts` — xóa field `team`
 
 **Follow-up**: Cần chạy migration tạo bảng `histories` trên Supabase production trước khi test History tab.
+
+---
+
+## 2026-04-26 · Bug fix — Vercel SPA 404 khi reload
+
+**Outcome**: Reload trên bất kỳ route nào (`/projects`, `/me`, v.v.) trả 404 do Vercel tìm file tĩnh không có.
+
+**Root cause**: React SPA cần serve `index.html` cho mọi path, Vercel mặc định không làm vậy.
+
+**Fix**: Thêm `my-agent-frontend/vercel.json` với rewrite `"/(.*)" → "/index.html"`.
+
+**Files**: `my-agent-frontend/vercel.json` (tạo mới)

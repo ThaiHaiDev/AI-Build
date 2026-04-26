@@ -11,7 +11,7 @@ export const ENDPOINTS = {
     USERS:           '/auth/admin/users',
     USER_ROLE:       (userId: string) => `/auth/admin/users/${userId}/role`,
     USER_DEACTIVATE: (userId: string) => `/auth/admin/users/${userId}/deactivate`,
-    HISTORY:         '/admin/history',
+    HISTORY:         '/auth/admin/history',
   },
   USERS: {
     LIST:   '/users',

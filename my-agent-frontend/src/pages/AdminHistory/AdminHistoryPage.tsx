@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { toast } from '@/components/ui/Toast'
 import { historyService } from '@/features/history/services/historyService'
 import type { HistoryEntry, ResourceType, HistoryGlobalParams } from '@/features/history/types/history.types'
 
@@ -48,6 +49,8 @@ export default function AdminHistoryPage() {
       const res = await historyService.listGlobal(buildParams(p))
       setEntries(res.data.entries)
       setTotal(res.data.total)
+    } catch {
+      toast.error(t('common:error_network'))
     } finally {
       setLoading(false)
     }

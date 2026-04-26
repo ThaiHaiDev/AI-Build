@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { toast } from '@/components/ui/Toast'
 import { historyService } from '../services/historyService'
 import type { HistoryEntry, ResourceType, HistoryProjectParams } from '../types/history.types'
 
@@ -43,6 +44,8 @@ export function HistoryTab({ projectId }: Props) {
       const data = res.data
       setTotal(data.total)
       setEntries((prev) => append ? [...prev, ...data.entries] : data.entries)
+    } catch {
+      toast.error(t('common:error_network'))
     } finally {
       append ? setLoadingMore(false) : setLoading(false)
     }

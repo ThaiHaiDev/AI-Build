@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from '@/components/ui/Toast'
 import { historyService } from '@/features/history/services/historyService'
+import { MetaBlock } from '@/features/history/components/MetaBlock'
 import type { HistoryEntry, ResourceType, HistoryGlobalParams } from '@/features/history/types/history.types'
 
 const RESOURCE_TYPES: ResourceType[] = ['test_account', 'project', 'member', 'user']
@@ -167,6 +168,7 @@ export default function AdminHistoryPage() {
                   <td className="px-4 py-3">
                     <p className="text-gray-900 truncate max-w-[180px]">{e.resourceName}</p>
                     <p className="text-xs text-gray-500">{typeLabel(e.resourceType)}</p>
+                    <MetaBlock entry={e} />
                   </td>
                   <td className="px-4 py-3 text-xs text-gray-500">{e.projectName ?? '—'}</td>
                 </tr>

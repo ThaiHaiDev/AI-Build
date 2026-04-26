@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from '@/components/ui/Toast'
 import { historyService } from '../services/historyService'
+import { MetaBlock } from './MetaBlock'
 import type { HistoryEntry, ResourceType, HistoryProjectParams } from '../types/history.types'
 
 const RESOURCE_TYPES: ResourceType[] = ['test_account', 'project', 'member', 'user']
@@ -98,19 +99,7 @@ export function HistoryTab({ projectId }: Props) {
                   <span>{actionLabel(e.action)}</span>
                 </p>
                 <p className="text-sm text-gray-600">{e.resourceName}</p>
-                {e.action === 'updated' && e.meta?.before && e.meta?.after && (
-                  <div className="mt-1 rounded bg-gray-50 px-2 py-1 text-xs text-gray-500 font-mono">
-                    {Object.keys(e.meta.after).map((k) =>
-                      e.meta!.before![k] !== e.meta!.after![k] ? (
-                        <div key={k}>
-                          <span className="text-red-500">- {k}: {String(e.meta!.before![k] ?? '')}</span>
-                          <br />
-                          <span className="text-green-600">+ {k}: {String(e.meta!.after![k] ?? '')}</span>
-                        </div>
-                      ) : null,
-                    )}
-                  </div>
-                )}
+                <MetaBlock entry={e} />
               </div>
               <time className="shrink-0 text-xs text-gray-400">{timeAgo(e.createdAt, lang)}</time>
             </li>

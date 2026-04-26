@@ -16,16 +16,27 @@
     "user":         "Người dùng"
   },
   "action": {
-    "created":             "Đã tạo",
-    "updated":             "Đã sửa",
-    "deleted":             "Đã xóa",
-    "archived":            "Đã archive",
-    "unarchived":          "Đã khôi phục",
-    "added":               "Đã thêm thành viên",
-    "removed":             "Đã gỡ thành viên",
-    "env_access_updated":  "Cập nhật quyền env",
-    "role_changed":        "Đổi vai trò",
-    "deactivated":         "Đã vô hiệu hoá"
+    "create":             "Đã tạo",
+    "update":             "Đã sửa",
+    "delete":             "Đã xóa",
+    "archive":            "Đã archive",
+    "unarchive":          "Đã khôi phục",
+    "add_member":         "Đã thêm thành viên",
+    "remove_member":      "Đã gỡ thành viên",
+    "update_env_access":  "Cập nhật quyền env",
+    "change_role":        "Đổi vai trò",
+    "deactivate":         "Đã vô hiệu hoá"
+  },
+  "field": {
+    "label":       "Nhãn",
+    "username":    "Tên đăng nhập",
+    "url":         "URL",
+    "note":        "Ghi chú",
+    "environment": "Môi trường",
+    "allowedEnvs": "Quyền env",
+    "role":        "Vai trò",
+    "name":        "Tên",
+    "status":      "Trạng thái"
   },
   "table": {
     "time":     "Thời gian",

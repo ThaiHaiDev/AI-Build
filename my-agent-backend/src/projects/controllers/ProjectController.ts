@@ -151,6 +151,7 @@ export const ProjectController = {
       resourceName: user.email,
       projectId:    projectId,
       projectName:  project.name,
+      meta: { after: { allowedEnvs: body.allowedEnvs } },
     });
     const members = await projectMemberStore.listMembers(projectId);
     res.status(201).json({ members });

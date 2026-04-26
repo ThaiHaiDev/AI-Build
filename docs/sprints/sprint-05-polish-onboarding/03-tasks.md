@@ -68,6 +68,27 @@
 
 ---
 
+### BE — Bổ sung meta còn thiếu (A39–A42)
+
+- [ ] **A39** · `TestAccountController.create` — thêm `meta: { after: { label, username, url, environment } }`
+- [ ] **A40** · `TestAccountController.remove` — thêm `meta: { before: { label, username, environment } }`
+- [ ] **A41** · `ProjectController.addMember` — thêm `meta: { after: { allowedEnvs } }`
+- [ ] **A42** · `AdminController.changeRole` — fetch role cũ, thêm `meta: { before: { role }, after: { role } }`
+
+### FE — Rich meta display (A43–A46)
+
+- [ ] **A43** · Fix bug `HistoryTab`: check `action === 'update'` (không phải `'updated'`) — diff hiện không bao giờ render
+- [ ] **A44** · Tạo `MetaBlock` component (`src/features/history/components/MetaBlock.tsx`):
+  - `create` → show `meta.after` fields (label, username, url, environment)
+  - `update` → show diff before → after (chỉ field thay đổi)
+  - `delete` → show `meta.before` fields (cái gì bị xóa)
+  - `add_member` / `update_env_access` → show allowedEnvs list
+  - `change_role` → show `before.role → after.role`
+- [ ] **A45** · `HistoryTab` — dùng `MetaBlock` thay thế inline diff cũ
+- [ ] **A46** · `AdminHistoryPage` — thêm expandable row hoặc inline `MetaBlock` dưới mỗi row trong bảng
+
+---
+
 ## Track B — Search & Filter
 
 ### BE

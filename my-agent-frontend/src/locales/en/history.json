@@ -16,16 +16,27 @@
     "user":         "User"
   },
   "action": {
-    "created":             "Created",
-    "updated":             "Updated",
-    "deleted":             "Deleted",
-    "archived":            "Archived",
-    "unarchived":          "Restored",
-    "added":               "Added member",
-    "removed":             "Removed member",
-    "env_access_updated":  "Updated env access",
-    "role_changed":        "Changed role",
-    "deactivated":         "Deactivated"
+    "create":             "Created",
+    "update":             "Updated",
+    "delete":             "Deleted",
+    "archive":            "Archived",
+    "unarchive":          "Restored",
+    "add_member":         "Added member",
+    "remove_member":      "Removed member",
+    "update_env_access":  "Updated env access",
+    "change_role":        "Changed role",
+    "deactivate":         "Deactivated"
+  },
+  "field": {
+    "label":       "Label",
+    "username":    "Username",
+    "url":         "URL",
+    "note":        "Note",
+    "environment": "Environment",
+    "allowedEnvs": "Allowed envs",
+    "role":        "Role",
+    "name":        "Name",
+    "status":      "Status"
   },
   "table": {
     "time":     "Time",

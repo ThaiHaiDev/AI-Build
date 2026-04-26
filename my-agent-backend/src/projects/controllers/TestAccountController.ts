@@ -63,6 +63,7 @@ export const TestAccountController = {
       resourceName: account.label,
       projectId:    req.params.id,
       projectName:  req.projectName ?? null,
+      meta: { after: { label: account.label, username: account.username, url: account.url ?? null, environment: account.environment } },
     });
     res.status(201).json({ account });
   }),
@@ -108,6 +109,7 @@ export const TestAccountController = {
       resourceName: existing.label,
       projectId:    req.params.id,
       projectName:  req.projectName ?? null,
+      meta: { before: { label: existing.label, username: existing.username, environment: existing.environment } },
     });
     res.status(204).send();
   }),

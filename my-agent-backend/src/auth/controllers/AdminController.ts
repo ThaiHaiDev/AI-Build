@@ -40,6 +40,8 @@ export const AdminController = {
     const targetId = req.params.userId!;
     if (targetId === req.user.id) throw new SelfActionForbiddenError('Cannot change your own role');
     const { role } = changeRoleSchema.parse(req.body);
+    const existing = await userStore.findById(targetId);
+    if (!existing) throw new NotFoundError('User not found');
     const updated = await userStore.changeRole(targetId, role);
     if (!updated) throw new NotFoundError('User not found');
     historyStore.append({
@@ -50,7 +52,7 @@ export const AdminController = {
       resourceType: 'user',
       resourceId:   targetId,
       resourceName: updated.email,
-      meta: { after: { role } },
+      meta: { before: { role: existing.role }, after: { role } },
     });
     res.json({ user: toPublicUser(updated) });
   }),

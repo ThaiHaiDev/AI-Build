@@ -26,7 +26,7 @@ export const routes = {
 } as const
 
 export const appRoutes: AppRoute[] = [
-  { path: routes.home,       routeType: 'public',    layout: 'app',  lazy: () => import('@/pages/Home') },
+  { path: routes.home,       routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/Home') },
   { path: routes.login,      routeType: 'auth',      layout: 'auth', lazy: () => import('@/pages/Login') },
   { path: routes.register,   routeType: 'auth',      layout: 'auth', lazy: () => import('@/pages/Register') },
   { path: routes.me,         routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/Me') },

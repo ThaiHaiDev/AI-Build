@@ -76,7 +76,7 @@ export function MetaBlock({ entry }: Props) {
   if (action === 'change_role' && after?.role) {
     return (
       <div className="mt-1 rounded bg-gray-50 px-2 py-1 text-xs font-mono text-gray-500">
-        {before?.role && (
+        {before?.role !== undefined && (
           <span className="text-red-500">- {t('field.role')}: {fmt(before.role)}<br /></span>
         )}
         <span className="text-green-600">+ {t('field.role')}: {fmt(after.role)}</span>

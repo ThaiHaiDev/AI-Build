@@ -30,3 +30,5 @@ environment/.env.staging
 # Generated
 src/services/graphql/generated
 coverage
+
+.vercel

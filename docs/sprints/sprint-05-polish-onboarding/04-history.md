@@ -304,3 +304,49 @@ Track C — UX Polish:
 **Fix**: Thêm `my-agent-frontend/vercel.json` với rewrite `"/(.*)" → "/index.html"`.
 
 **Files**: `my-agent-frontend/vercel.json` (tạo mới)
+
+---
+
+## 2026-04-26 · Feat — History rich meta display (A39–A46)
+
+**Outcome**: History hiển thị đầy đủ thông tin: field nào thay đổi, tạo gì, xóa gì, env nào, role cũ/mới.
+
+**Root cause / vấn đề**:
+1. BE thiếu `meta` ở 4 action: `test_account create/delete`, `add_member`, `change_role` (chỉ có `after.role`, thiếu `before.role`)
+2. FE `HistoryTab` check `action === 'updated'` nhưng BE gửi `'update'` → diff không bao giờ hiện
+3. i18n action keys sai (`created` → `create`, `added` → `add_member`, v.v.)
+4. Không có `MetaBlock` cho các action type khác (create, delete, member, role)
+
+**Fix**:
+- BE: thêm `meta.after` cho `test_account create`, `meta.before` cho `test_account delete`, `meta.after.allowedEnvs` cho `add_member`, `meta.before.role` cho `change_role`
+- FE: tạo `MetaBlock` component xử lý tất cả action types; fix action key check; dùng MetaBlock trong cả HistoryTab + AdminHistoryPage
+- i18n: cập nhật action keys + thêm `field.*` labels (label, username, environment, allowedEnvs, role...)
+
+**Files**:
+- `my-agent-backend/src/projects/controllers/TestAccountController.ts`
+- `my-agent-backend/src/projects/controllers/ProjectController.ts`
+- `my-agent-backend/src/auth/controllers/AdminController.ts`
+- `my-agent-frontend/src/features/history/components/MetaBlock.tsx` (tạo mới)
+- `my-agent-frontend/src/features/history/components/HistoryTab.tsx`
+- `my-agent-frontend/src/pages/AdminHistory/AdminHistoryPage.tsx`
+- `my-agent-frontend/src/locales/en/history.json` + `vi/history.json`
+
+---
+
+## 2026-04-26 · Bug fix — Wrong admin history route + no toast on API error
+
+**Outcome**: Hai bug ở History module FE đã được fix.
+
+**Root cause**:
+1. `ADMIN.HISTORY` endpoint sai: `/admin/history` thay vì `/auth/admin/history` — BE mount `authRouter` tại `/auth`, nên path đầy đủ phải có prefix `/auth`.
+2. `HistoryTab.tsx` và `AdminHistoryPage.tsx` không có `catch` block → lỗi mạng nuốt im, không show toast.
+
+**Fix**:
+1. `src/services/rest/endpoints.ts` — sửa `ADMIN.HISTORY` → `/auth/admin/history`
+2. `src/pages/AdminHistory/AdminHistoryPage.tsx` — thêm `catch { toast.error(...) }`
+3. `src/features/history/components/HistoryTab.tsx` — thêm `catch { toast.error(...) }`
+
+**Files**:
+- `my-agent-frontend/src/services/rest/endpoints.ts`
+- `my-agent-frontend/src/pages/AdminHistory/AdminHistoryPage.tsx`
+- `my-agent-frontend/src/features/history/components/HistoryTab.tsx`

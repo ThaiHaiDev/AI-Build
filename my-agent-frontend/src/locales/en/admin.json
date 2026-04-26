@@ -1,6 +1,8 @@
 {
   "title": "User Management",
   "sub": "Manage all accounts in the system.",
+  "search_placeholder": "Search by name or email…",
+  "no_search_results":  "No users found for «{{q}}».",
   "filter": {
     "role_all": "All roles",
     "status_all": "All statuses",

@@ -141,6 +141,15 @@ export function VaultTab({ projectId, canWrite }: Props) {
     return <p className="py-4 text-sm text-gray-500">{t('common:loading', { defaultValue: 'Loading…' })}</p>
   }
 
+  if (grantedEnvs.length === 0) {
+    return (
+      <div className="rounded border border-dashed border-gray-300 p-10 text-center text-sm text-gray-500">
+        🔒
+        <p className="mt-2">{t('vault.empty_access')}</p>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       {grantedEnvs.map((env) => (

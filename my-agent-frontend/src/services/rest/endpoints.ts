@@ -11,6 +11,7 @@ export const ENDPOINTS = {
     USERS:           '/auth/admin/users',
     USER_ROLE:       (userId: string) => `/auth/admin/users/${userId}/role`,
     USER_DEACTIVATE: (userId: string) => `/auth/admin/users/${userId}/deactivate`,
+    HISTORY:         '/admin/history',
   },
   USERS: {
     LIST:   '/users',
@@ -31,5 +32,6 @@ export const ENDPOINTS = {
     MEMBER_ENV_ACCESS:(id: string, memberId: string) => `/projects/${id}/members/${memberId}/env-access`,
     ACCOUNTS:         (id: string) => `/projects/${id}/accounts`,
     ACCOUNT:          (id: string, accountId: string) => `/projects/${id}/accounts/${accountId}`,
+    HISTORY:          (id: string) => `/projects/${id}/history`,
   },
 } as const

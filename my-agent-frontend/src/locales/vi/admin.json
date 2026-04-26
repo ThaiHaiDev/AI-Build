@@ -1,6 +1,8 @@
 {
   "title": "Quản lý người dùng",
   "sub": "Quản lý toàn bộ tài khoản trong hệ thống.",
+  "search_placeholder": "Tìm theo tên hoặc email…",
+  "no_search_results":  "Không tìm thấy người dùng nào cho «{{q}}».",
   "filter": {
     "role_all": "Tất cả vai trò",
     "status_all": "Tất cả trạng thái",

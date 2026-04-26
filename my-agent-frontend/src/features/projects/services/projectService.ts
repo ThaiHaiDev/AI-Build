@@ -9,9 +9,12 @@ import type {
 } from '../types/project.types'
 
 export const projectService = {
-  list: (includeArchived = false) =>
+  list: (includeArchived = false, search?: string) =>
     api.get<{ projects: Project[] }>(ENDPOINTS.PROJECTS.LIST, {
-      params: includeArchived ? { includeArchived: 'true' } : undefined,
+      params: {
+        ...(includeArchived ? { includeArchived: 'true' } : {}),
+        ...(search ? { search } : {}),
+      },
     }),
 
   detail: (id: string) => api.get<{ project: Project }>(ENDPOINTS.PROJECTS.DETAIL(id)),

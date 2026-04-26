@@ -15,6 +15,10 @@
     "title":    "Chào mừng",
     "subtitle": "Frontend đã khởi động."
   },
+  "error_network": "Lỗi kết nối mạng. Vui lòng kiểm tra lại.",
+  "load_more":     "Tải thêm",
+  "no_results":    "Không tìm thấy kết quả.",
+  "loading":       "Đang tải…",
   "header": {
     "brand":              "my-agent",
     "brand_sub":          "internal",

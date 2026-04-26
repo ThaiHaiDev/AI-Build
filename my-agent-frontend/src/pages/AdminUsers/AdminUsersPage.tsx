@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useDebounce } from '@/hooks/useDebounce'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
@@ -23,8 +24,11 @@ export default function AdminUsersPage() {
 
   const [users,        setUsers]        = useState<(AdminUser & { isActive: boolean })[]>([])
   const [loading,      setLoading]      = useState(true)
+  const [search,       setSearch]       = useState('')
   const [roleFilter,   setRoleFilter]   = useState<Role | ''>('')
   const [statusFilter, setStatusFilter] = useState<'' | 'true' | 'false'>('')
+
+  const debouncedSearch = useDebounce(search, 300)
 
   const [createOpen,    setCreateOpen]    = useState(false)
   const [createSaving,  setCreateSaving]  = useState(false)
@@ -41,9 +45,10 @@ export default function AdminUsersPage() {
   const loadUsers = async () => {
     setLoading(true)
     try {
-      const params: { role?: Role; isActive?: 'true' | 'false' } = {}
-      if (roleFilter)   params.role     = roleFilter as Role
-      if (statusFilter) params.isActive = statusFilter as 'true' | 'false'
+      const params: { role?: Role; isActive?: 'true' | 'false'; search?: string } = {}
+      if (roleFilter)      params.role     = roleFilter as Role
+      if (statusFilter)    params.isActive = statusFilter as 'true' | 'false'
+      if (debouncedSearch) params.search   = debouncedSearch
 
       const [allRes, deactivatedRes] = await Promise.all([
         adminService.listUsers(params),
@@ -66,7 +71,7 @@ export default function AdminUsersPage() {
     }
   }
 
-  useEffect(() => { void loadUsers() }, [roleFilter, statusFilter])
+  useEffect(() => { void loadUsers() }, [roleFilter, statusFilter, debouncedSearch])
 
   const handleCreate = async () => {
     setCreateError('')
@@ -135,6 +140,16 @@ export default function AdminUsersPage() {
           <p className="mt-1 text-sm text-gray-500">{t('sub')}</p>
         </div>
         <Button onClick={() => setCreateOpen(true)}>{t('create_btn')}</Button>
+      </div>
+
+      {/* Search */}
+      <div className="mb-3">
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t('search_placeholder')}
+          className="max-w-sm"
+        />
       </div>
 
       {/* Filters */}
@@ -229,7 +244,9 @@ export default function AdminUsersPage() {
             </tbody>
           </table>
           {users.length === 0 && (
-            <p className="py-6 text-center text-sm text-gray-400">—</p>
+            <p className="py-6 text-center text-sm text-gray-400">
+              {debouncedSearch ? t('no_search_results', { q: debouncedSearch }) : '—'}
+            </p>
           )}
         </div>
       )}

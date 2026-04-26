@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -9,6 +9,7 @@ import { projectService } from '@/features/projects/services/projectService'
 import { ProjectCard } from '@/features/projects/components/ProjectCard'
 import { ProjectFormModal } from '@/features/projects/components/ProjectFormModal'
 import { parseProjectError } from '@/features/projects/utils/parseProjectError'
+import { useDebounce } from '@/hooks/useDebounce'
 import type { Project } from '@/features/projects/types/project.types'
 
 export default function ProjectsPage() {
@@ -16,16 +17,18 @@ export default function ProjectsPage() {
   const user = useAuthStore((s) => s.user)
   const isSuperAdmin = user?.role === ROLES.SUPER_ADMIN
 
-  const [projects, setProjects]               = useState<Project[]>([])
-  const [loading, setLoading]                 = useState(true)
+  const [projects,        setProjects]        = useState<Project[]>([])
+  const [loading,         setLoading]         = useState(true)
   const [includeArchived, setIncludeArchived] = useState(false)
-  const [search, setSearch]                   = useState('')
-  const [createOpen, setCreateOpen]           = useState(false)
+  const [search,          setSearch]          = useState('')
+  const [createOpen,      setCreateOpen]      = useState(false)
 
-  const load = async (archived: boolean) => {
+  const debouncedSearch = useDebounce(search, 300)
+
+  const load = async (archived: boolean, q: string) => {
     setLoading(true)
     try {
-      const res = await projectService.list(archived)
+      const res = await projectService.list(archived, q || undefined)
       setProjects(res.data.projects)
     } catch (err) {
       const parsed = parseProjectError(err)
@@ -36,19 +39,16 @@ export default function ProjectsPage() {
   }
 
   useEffect(() => {
-    void load(includeArchived)
-  }, [includeArchived])
-
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase()
-    if (!q) return projects
-    return projects.filter((p) => p.name.toLowerCase().includes(q))
-  }, [projects, search])
+    void load(includeArchived, debouncedSearch)
+  }, [includeArchived, debouncedSearch])
 
   const handleCreated = (p: Project) => {
     setProjects((prev) => [p, ...prev])
     setCreateOpen(false)
   }
+
+  const showNoSearchResults = !loading && projects.length === 0 && debouncedSearch !== ''
+  const showEmpty           = !loading && projects.length === 0 && debouncedSearch === ''
 
   return (
     <div className="mx-auto max-w-6xl p-6">
@@ -77,14 +77,30 @@ export default function ProjectsPage() {
       </div>
 
       {loading ? (
-        <p className="text-sm text-gray-500">{t('common:loading', { defaultValue: 'Loading…' })}</p>
-      ) : filtered.length === 0 ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="animate-pulse rounded border border-gray-200 bg-white p-4">
+              <div className="mb-2 h-4 w-3/4 rounded bg-gray-200" />
+              <div className="mb-1 h-3 w-1/2 rounded bg-gray-200" />
+              <div className="h-3 w-1/3 rounded bg-gray-200" />
+            </div>
+          ))}
+        </div>
+      ) : showNoSearchResults ? (
         <div className="rounded border border-dashed border-gray-300 p-8 text-center text-sm text-gray-500">
-          {isSuperAdmin ? t('list.empty_admin') : t('list.empty_member')}
+          🔍 {t('list.no_search_results', { q: debouncedSearch })}
+        </div>
+      ) : showEmpty ? (
+        <div className="rounded border border-dashed border-gray-300 p-8 text-center text-sm text-gray-500">
+          📁
+          <p className="mt-2">{isSuperAdmin ? t('list.empty_admin') : t('list.empty_user')}</p>
+          {isSuperAdmin && (
+            <Button className="mt-3" onClick={() => setCreateOpen(true)}>{t('list.create')}</Button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((p) => <ProjectCard key={p.id} project={p} />)}
+          {projects.map((p) => <ProjectCard key={p.id} project={p} />)}
         </div>
       )}
 

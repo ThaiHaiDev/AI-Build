@@ -15,6 +15,10 @@
     "title":    "Welcome",
     "subtitle": "Frontend scaffold is up."
   },
+  "error_network": "Network error. Please check your connection.",
+  "load_more":     "Load more",
+  "no_results":    "No results found.",
+  "loading":       "Loading…",
   "header": {
     "brand":              "my-agent",
     "brand_sub":          "internal",

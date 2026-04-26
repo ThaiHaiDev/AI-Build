@@ -251,8 +251,44 @@ created_at:    "2026-04-25T12:00:00Z"
 
 ---
 
-**Follow-up** (sau khi review xong):
-- [ ] Implement model `History` (Sequelize)
-- [ ] Implement `historyStore`: `append()`, `listByProject()`, `listGlobal()`
-- [ ] Hook vào controllers: TestAccount, Project, ProjectMember, AdminController
-- [ ] Endpoints: `GET /projects/:id/history`, `GET /admin/history`
+---
+
+## 2026-04-26 · FE Sprint 5 — Track A + B + C hoàn thành
+
+**Outcome**: Toàn bộ FE sprint 5 implement xong: History module, Search/Filter, UX Polish.
+
+**Files**:
+
+Track A — History:
+- `src/features/history/types/history.types.ts` — `HistoryEntry`, `HistoryListResponse`, params types
+- `src/features/history/services/historyService.ts` — `listByProject`, `listGlobal`
+- `src/services/rest/endpoints.ts` — thêm `PROJECTS.HISTORY(id)`, `ADMIN.HISTORY`
+- `src/features/history/components/HistoryTab.tsx` — timeline, filter loại, load more, diff before/after
+- `src/pages/ProjectDetail/ProjectDetailPage.tsx` — thêm tab "Lịch sử" (Admin+ only)
+- `src/pages/AdminHistory/AdminHistoryPage.tsx` — bảng, filter type/actor/date, pagination
+- `src/pages/AdminHistory/index.ts`
+- `src/router/routes.ts` — thêm route `/admin/history`
+- `src/locales/en/history.json` + `src/locales/vi/history.json` — namespace mới
+- `src/locales/en/index.ts` + `src/locales/vi/index.ts` + `src/lib/i18n.ts` — đăng ký namespace
+
+Track B — Search:
+- `src/features/projects/services/projectService.ts` — `list()` nhận param `search`
+- `src/features/admin/services/adminService.ts` — `listUsers()` nhận param `search`
+- `src/pages/Projects/ProjectsPage.tsx` — debounce 300ms, gọi API, skeleton loader, empty states theo role
+- `src/pages/AdminUsers/AdminUsersPage.tsx` — search input + debounce, empty state theo query
+- `src/locales/en/projects.json` + `vi` — thêm `no_search_results`, `empty_user`, `tab_history`
+- `src/locales/en/admin.json` + `vi` — thêm `search_placeholder`, `no_search_results`
+
+Track C — UX Polish:
+- `src/components/layout/Sidebar/Sidebar.tsx` — NavLink active, section Admin chỉ hiện SA
+- `src/components/layout/AppLayout/AppLayout.tsx` — tích hợp Sidebar
+- `src/features/projects/components/VaultTab.tsx` — empty state khi `grantedEnvs` rỗng
+- `src/pages/Dashboard/DashboardPage.tsx` — empty state theo role
+- `src/components/common/ErrorBoundary/ErrorBoundary.tsx` — UI tiếng Việt + nút "Tải lại trang"
+- `src/services/rest/api.ts` — interceptor toast khi network/timeout error
+- `src/locales/en/me.json` + `vi` — xóa key `team`, `manager` thừa (C40)
+- `src/locales/en/common.json` + `vi` — thêm `error_network`, `load_more`, `no_results`
+- `src/features/auth/components/RegisterForm/RegisterForm.tsx` — xóa field "Phòng ban" thừa
+- `src/shared/schemas/auth.schema.ts` — xóa field `team`
+
+**Follow-up**: Cần chạy migration tạo bảng `histories` trên Supabase production trước khi test History tab.

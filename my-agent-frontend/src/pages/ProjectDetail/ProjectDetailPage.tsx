@@ -13,6 +13,7 @@ import { ProjectFormModal } from '@/features/projects/components/ProjectFormModa
 import { AddMemberModal } from '@/features/projects/components/AddMemberModal'
 import { ConfirmDialog } from '@/features/projects/components/ConfirmDialog'
 import { VaultTab } from '@/features/projects/components/VaultTab'
+import { HistoryTab } from '@/features/history/components/HistoryTab'
 import type { Project, ProjectMember, Environment } from '@/features/projects/types/project.types'
 
 const ALL_ENVS: Environment[] = ['dev', 'staging', 'production']
@@ -22,7 +23,7 @@ const ENV_COLOR: Record<Environment, string> = {
   production: 'bg-red-100 text-red-700',
 }
 
-type Tab = 'overview' | 'members' | 'vault'
+type Tab = 'overview' | 'members' | 'vault' | 'history'
 
 export default function ProjectDetailPage() {
   const { t }    = useTranslation('projects')
@@ -196,7 +197,7 @@ export default function ProjectDetailPage() {
       </header>
 
       <nav className="mb-4 flex gap-2 border-b border-gray-200">
-        {(['overview', 'members', 'vault'] as Tab[]).map((k) => (
+        {(['overview', 'members', 'vault', ...(canWriteVault ? ['history' as Tab] : [])] as Tab[]).map((k) => (
           <button
             key={k}
             onClick={() => setTab(k)}
@@ -204,7 +205,10 @@ export default function ProjectDetailPage() {
               tab === k ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            {t(k === 'overview' ? 'detail.tab_overview' : k === 'members' ? 'detail.tab_members' : 'detail.tab_vault')}
+            {k === 'overview' ? t('detail.tab_overview')
+              : k === 'members' ? t('detail.tab_members')
+              : k === 'vault'   ? t('detail.tab_vault')
+              : t('detail.tab_history')}
           </button>
         ))}
       </nav>
@@ -275,6 +279,10 @@ export default function ProjectDetailPage() {
 
       {tab === 'vault' && (
         <VaultTab projectId={project.id} canWrite={canWriteVault && !archived} />
+      )}
+
+      {tab === 'history' && (
+        <HistoryTab projectId={project.id} />
       )}
 
       <ProjectFormModal

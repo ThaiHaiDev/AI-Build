@@ -23,10 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
-# Env (commit only example)
+# Env — .production không có secret, commit được. Ignore dev/staging.
 environment/.env.development
 environment/.env.staging
-environment/.env.production
 
 # Generated
 src/services/graphql/generated

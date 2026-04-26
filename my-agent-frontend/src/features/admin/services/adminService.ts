@@ -4,7 +4,7 @@ import type { AdminUser, CreateUserInput } from '../types/admin.types'
 import type { Role } from '@/shared/constants/roles'
 
 export const adminService = {
-  listUsers: (params?: { role?: Role; isActive?: 'true' | 'false' }) =>
+  listUsers: (params?: { role?: Role; isActive?: 'true' | 'false'; search?: string }) =>
     api.get<{ users: AdminUser[] }>(ENDPOINTS.ADMIN.USERS, { params }),
 
   createUser: (body: CreateUserInput) =>

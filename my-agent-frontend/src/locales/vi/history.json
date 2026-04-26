@@ -1,0 +1,41 @@
+{
+  "tab_title": "Lịch sử",
+  "filter": {
+    "type_all":   "Tất cả loại",
+    "action_all": "Tất cả hành động",
+    "project_all":"Tất cả dự án",
+    "actor_ph":   "Lọc theo email…",
+    "date_from":  "Từ ngày",
+    "date_to":    "Đến ngày",
+    "apply":      "Áp dụng"
+  },
+  "resource_type": {
+    "test_account": "Tài khoản test",
+    "project":      "Dự án",
+    "member":       "Thành viên",
+    "user":         "Người dùng"
+  },
+  "action": {
+    "created":             "Đã tạo",
+    "updated":             "Đã sửa",
+    "deleted":             "Đã xóa",
+    "archived":            "Đã archive",
+    "unarchived":          "Đã khôi phục",
+    "added":               "Đã thêm thành viên",
+    "removed":             "Đã gỡ thành viên",
+    "env_access_updated":  "Cập nhật quyền env",
+    "role_changed":        "Đổi vai trò",
+    "deactivated":         "Đã vô hiệu hoá"
+  },
+  "table": {
+    "time":     "Thời gian",
+    "actor":    "Người thực hiện",
+    "action":   "Hành động",
+    "resource": "Đối tượng",
+    "project":  "Dự án"
+  },
+  "load_more":     "Tải thêm",
+  "empty":         "Chưa có lịch sử.",
+  "page_title":    "Lịch sử hệ thống",
+  "pagination":    "Hiển thị {{from}}–{{to}} / {{total}}"
+}

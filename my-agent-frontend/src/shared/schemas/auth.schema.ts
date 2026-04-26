@@ -14,7 +14,6 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export const registerSchema = z
   .object({
     name: z.string().trim().min(1, 'errors.required').max(100),
-    team: z.enum(['Engineering', 'Product', 'Design', 'Data', 'Operations']).optional(),
     email: z.string().min(1, 'errors.required').email('errors.email'),
     password: z.string().min(10, 'errors.pwd_short'),
     passwordConfirm: z.string().min(1, 'errors.required'),

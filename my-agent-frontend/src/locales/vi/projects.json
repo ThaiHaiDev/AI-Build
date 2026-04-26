@@ -4,7 +4,9 @@
     "page_title": "Danh sách dự án",
     "empty_member": "Bạn chưa thuộc dự án nào. Liên hệ PM/Leader để được add.",
     "empty_admin": "Chưa có dự án nào. Tạo dự án mới để bắt đầu.",
-    "search_placeholder": "Tìm theo tên dự án…",
+    "search_placeholder":  "Tìm theo tên, tech stack, đối tác…",
+    "no_search_results":   "Không tìm thấy kết quả cho «{{q}}».",
+    "empty_user":          "Bạn chưa được thêm vào dự án nào. Liên hệ leader hoặc SA của bạn.",
     "include_archived": "Xem dự án đã archive",
     "member_count": "{{count}} thành viên",
     "create": "Tạo dự án"
@@ -21,6 +23,7 @@
     "tab_overview": "Tổng quan",
     "tab_members": "Thành viên",
     "tab_vault": "Tài khoản test",
+    "tab_history": "Lịch sử",
     "description": "Mô tả",
     "tech_stack": "Tech stack",
     "partner": "Đối tác",
@@ -131,6 +134,7 @@
     "toast_created": "Đã thêm tài khoản test.",
     "toast_updated": "Đã cập nhật tài khoản test.",
     "toast_deleted": "Đã xóa tài khoản test.",
+    "empty_access": "Bạn chưa được cấp quyền xem môi trường nào. Liên hệ Admin của dự án để được cấp quyền.",
     "error_forbidden": "Chỉ admin mới có thể thao tác tài khoản test.",
     "error_generic": "Đã có lỗi xảy ra, vui lòng thử lại."
   }

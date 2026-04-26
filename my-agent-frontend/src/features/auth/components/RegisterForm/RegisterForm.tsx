@@ -9,12 +9,10 @@ import { registerSchema, passwordStrength, type RegisterInput } from '@/shared/s
 import { routes } from '@/router/routes';
 import { logger } from '@/lib/logger';
 import {
-  UserIcon, TeamIcon, MailIcon, LockIcon,
+  UserIcon, MailIcon, LockIcon,
   EyeIcon, EyeOffIcon, ArrowRightIcon, SpinIcon, AlertCircleIcon,
 } from '../icons';
 import styles from './RegisterForm.module.scss';
-
-const TEAMS = ['Engineering', 'Product', 'Design', 'Data', 'Operations'] as const;
 
 export function RegisterForm() {
   const { t } = useTranslation('auth');
@@ -31,7 +29,7 @@ export function RegisterForm() {
     watch,
     formState: { errors },
   } = useZodForm<RegisterInput>(registerSchema, {
-    defaultValues: { name: '', team: 'Engineering' as const, email: '', password: '', passwordConfirm: '' },
+    defaultValues: { name: '', email: '', password: '', passwordConfirm: '' },
   });
 
   const pwd = watch('password');
@@ -63,37 +61,22 @@ export function RegisterForm() {
         </div>
       )}
 
-      {/* Name + Team — side by side */}
-      <div className={styles.row2}>
-        <div className={styles.fieldGroup}>
-          <label htmlFor="reg-name" className={styles.label}>{t('register.name')}</label>
-          <div className={`${styles.inputWrap} ${errors.name ? styles.inputInvalid : ''}`}>
-            <UserIcon className={styles.inputIcon} />
-            <input
-              id="reg-name"
-              type="text"
-              autoComplete="name"
-              placeholder={t('register.name_ph')}
-              aria-invalid={!!errors.name}
-              className={styles.input}
-              {...register('name')}
-            />
-          </div>
-          <div className={styles.errorSlot}>{errors.name && <span>{t(errors.name.message as string)}</span>}</div>
+      {/* Name */}
+      <div className={styles.fieldGroup}>
+        <label htmlFor="reg-name" className={styles.label}>{t('register.name')}</label>
+        <div className={`${styles.inputWrap} ${errors.name ? styles.inputInvalid : ''}`}>
+          <UserIcon className={styles.inputIcon} />
+          <input
+            id="reg-name"
+            type="text"
+            autoComplete="name"
+            placeholder={t('register.name_ph')}
+            aria-invalid={!!errors.name}
+            className={styles.input}
+            {...register('name')}
+          />
         </div>
-
-        <div className={styles.fieldGroup}>
-          <label htmlFor="reg-team" className={styles.label}>{t('register.team')}</label>
-          <div className={`${styles.inputWrap} ${errors.team ? styles.inputInvalid : ''}`}>
-            <TeamIcon className={styles.inputIcon} />
-            <select id="reg-team" className={styles.select} {...register('team')}>
-              {TEAMS.map((team) => (
-                <option key={team} value={team}>{team}</option>
-              ))}
-            </select>
-          </div>
-          <div className={styles.errorSlot} />
-        </div>
+        <div className={styles.errorSlot}>{errors.name && <span>{t(errors.name.message as string)}</span>}</div>
       </div>
 
       {/* Email */}

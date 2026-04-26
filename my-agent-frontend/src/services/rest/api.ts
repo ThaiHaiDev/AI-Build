@@ -3,6 +3,8 @@ import { env } from '@/config/env'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { ENDPOINTS } from './endpoints'
 import { logger } from '@/lib/logger'
+import { toast } from '@/components/ui/Toast'
+import i18n from '@/lib/i18n'
 
 const api: AxiosInstance = axios.create({
   baseURL:         env.VITE_API_BASE_URL,
@@ -55,6 +57,10 @@ api.interceptors.response.use(
         logger.warn('Refresh token failed, logging out')
         useAuthStore.getState().logout()
       }
+    }
+
+    if (!error.response && (error.code === 'ECONNABORTED' || error.code === 'ERR_NETWORK' || !error.request?.status)) {
+      toast.error(i18n.t('common:error_network'))
     }
 
     return Promise.reject(error)

@@ -4,7 +4,9 @@
     "page_title": "Projects",
     "empty_member": "You don't belong to any project yet. Contact your PM/Leader to be added.",
     "empty_admin": "No projects yet. Create one to get started.",
-    "search_placeholder": "Search by project name…",
+    "search_placeholder":  "Search by name, tech stack, partner…",
+    "no_search_results":   "No results for «{{q}}».",
+    "empty_user":          "You haven't been added to any project. Contact your leader or SA.",
     "include_archived": "Show archived projects",
     "member_count": "{{count}} members",
     "create": "New project"
@@ -21,6 +23,7 @@
     "tab_overview": "Overview",
     "tab_members": "Members",
     "tab_vault": "Test Accounts",
+    "tab_history": "History",
     "description": "Description",
     "tech_stack": "Tech stack",
     "partner": "Partner",
@@ -131,6 +134,7 @@
     "toast_created": "Test account added.",
     "toast_updated": "Test account updated.",
     "toast_deleted": "Test account deleted.",
+    "empty_access": "You haven't been granted access to any environment. Contact the project admin.",
     "error_forbidden": "Only admins can modify test accounts.",
     "error_generic": "Something went wrong. Please try again."
   }

@@ -8,8 +8,6 @@
   "email":        "Work email",
   "email_locked": "locked",
   "employee_id":  "Employee ID",
-  "team":         "Department",
-  "manager":      "Direct manager",
   "joined":       "Joined",
   "edit_btn":     "Edit",
   "save":         "Save changes",

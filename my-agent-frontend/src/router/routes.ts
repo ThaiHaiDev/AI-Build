@@ -20,8 +20,9 @@ export const routes = {
   dashboard:    '/dashboard',
   projects:     '/projects',
   projectDetail:(id: string) => `/projects/${id}`,
-  adminUsers:   '/admin/users',
-  notFound:     '/404',
+  adminUsers:    '/admin/users',
+  adminHistory:  '/admin/history',
+  notFound:      '/404',
 } as const
 
 export const appRoutes: AppRoute[] = [
@@ -32,6 +33,7 @@ export const appRoutes: AppRoute[] = [
   { path: routes.dashboard,  routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/Dashboard') },
   { path: routes.projects,   routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/Projects') },
   { path: '/projects/:id',   routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/ProjectDetail') },
-  { path: routes.adminUsers, routeType: 'protected', layout: 'app',  lazy: () => import('@/pages/AdminUsers') },
-  { path: routes.notFound,   routeType: 'public',    layout: 'app',  lazy: () => import('@/pages/NotFound') },
+  { path: routes.adminUsers,   routeType: 'protected', layout: 'app', lazy: () => import('@/pages/AdminUsers') },
+  { path: routes.adminHistory, routeType: 'protected', layout: 'app', lazy: () => import('@/pages/AdminHistory') },
+  { path: routes.notFound,     routeType: 'public',    layout: 'app', lazy: () => import('@/pages/NotFound') },
 ]

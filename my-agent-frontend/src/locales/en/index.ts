@@ -5,5 +5,6 @@ import projects from './projects.json'
 import home from './home.json'
 import me from './me.json'
 import admin from './admin.json'
+import history from './history.json'
 
-export default { common, auth, validation, projects, home, me, admin }
+export default { common, auth, validation, projects, home, me, admin, history }

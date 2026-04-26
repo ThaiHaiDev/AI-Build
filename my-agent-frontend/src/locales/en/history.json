@@ -1,0 +1,41 @@
+{
+  "tab_title": "History",
+  "filter": {
+    "type_all":   "All types",
+    "action_all": "All actions",
+    "project_all":"All projects",
+    "actor_ph":   "Filter by email…",
+    "date_from":  "From",
+    "date_to":    "To",
+    "apply":      "Apply"
+  },
+  "resource_type": {
+    "test_account": "Test account",
+    "project":      "Project",
+    "member":       "Member",
+    "user":         "User"
+  },
+  "action": {
+    "created":             "Created",
+    "updated":             "Updated",
+    "deleted":             "Deleted",
+    "archived":            "Archived",
+    "unarchived":          "Restored",
+    "added":               "Added member",
+    "removed":             "Removed member",
+    "env_access_updated":  "Updated env access",
+    "role_changed":        "Changed role",
+    "deactivated":         "Deactivated"
+  },
+  "table": {
+    "time":     "Time",
+    "actor":    "Actor",
+    "action":   "Action",
+    "resource": "Resource",
+    "project":  "Project"
+  },
+  "load_more":     "Load more",
+  "empty":         "No history yet.",
+  "page_title":    "System history",
+  "pagination":    "Showing {{from}}–{{to}} / {{total}}"
+}

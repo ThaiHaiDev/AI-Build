@@ -108,10 +108,6 @@ export default function MePage() {
 
       {/* Identity strip card */}
       <div className={styles.identityCard}>
-        <div className={styles.identityBanner}>
-          <div className={styles.identityGridBg} />
-          <div className={styles.identityBlob} />
-        </div>
         <div className={styles.identityRow}>
           <div className={styles.avatar}>{ini}</div>
           <div className={styles.identityInfo}>

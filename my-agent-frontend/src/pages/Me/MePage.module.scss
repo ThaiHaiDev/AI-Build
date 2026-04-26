@@ -79,40 +79,11 @@
   background: #fff;
 }
 
-.identityBanner {
-  position: relative;
-  height: 88px;
-  background: var(--fg);
-  overflow: hidden;
-}
-
-.identityGridBg {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px);
-  background-size: 32px 32px;
-}
-
-.identityBlob {
-  position: absolute;
-  top: -40px;
-  right: -40px;
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  background: var(--accent);
-  filter: blur(50px);
-  opacity: 0.3;
-}
-
 .identityRow {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0 1.5rem 1.5rem;
-  margin-top: -2.5rem;
+  padding: 1.5rem;
 }
 
 .avatar {
@@ -136,7 +107,6 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding-top: 2.5rem;
 }
 
 .identityName {

@@ -96,7 +96,26 @@ export default function ProjectDetailPage() {
   }, [tab, id])
 
   if (loading) {
-    return <p className="p-6 text-sm text-gray-500">{t('common:loading', { defaultValue: 'Loading…' })}</p>
+    return (
+      <div className="mx-auto max-w-5xl p-6 animate-pulse">
+        <div className="mb-1 h-3 w-24 rounded bg-gray-200" />
+        <div className="mb-4 h-7 w-64 rounded bg-gray-200" />
+        <div className="mb-6 flex gap-2">
+          <div className="h-5 w-16 rounded bg-gray-200" />
+          <div className="h-5 w-24 rounded bg-gray-200" />
+        </div>
+        <div className="mb-4 flex gap-6 border-b border-gray-200 pb-2">
+          {[80, 96, 128, 80].map((w, i) => (
+            <div key={i} className="h-4 rounded bg-gray-200" style={{ width: w }} />
+          ))}
+        </div>
+        <div className="space-y-3">
+          <div className="h-4 w-3/4 rounded bg-gray-200" />
+          <div className="h-4 w-1/2 rounded bg-gray-200" />
+          <div className="h-4 w-2/3 rounded bg-gray-200" />
+        </div>
+      </div>
+    )
   }
   if (notFound || !project) {
     return (
